@@ -58,8 +58,9 @@ func (auth *Authentication) SecureRequest(method string, endpoint string, req *h
 
 func (auth *Authentication) isAuthenticated() bool {
     if len(auth.token) > 0 {
-        //TODO: check expiration
-        return true
+        if expires.Sub(time.Now()) > 0 {
+            return true
+        }
     }
     return false
 }
