@@ -2,6 +2,7 @@ package fortycloud
 
 import (
     "net/http"
+    "io/ioutil"
 )
 
 const (
@@ -25,4 +26,19 @@ func NewService(client *http.Client, auth *Authentication) *Service {
 
 func (s *Service) Authenticate() error {
     return s.Auth.Do(s)
+}
+
+func (s *Service) Get(url string) ([]byte, error) {
+    req, err := http.NewRequest("GET", url, nil)
+    req.Header.Set("Content-Type", "application/json")
+    req.Header.Add("X-Auth-Token", s.Auth.Token)
+    
+    res, err := s.Client.Do(req)
+    if err != nil {
+        return nil, err
+    }
+    
+    defer res.Body.Close()
+    
+    return ioutil.ReadAll(res.Body)
 }
