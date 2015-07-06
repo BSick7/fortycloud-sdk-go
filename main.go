@@ -9,7 +9,7 @@ func main() {
     api := api.NewApi("https://api.fortycloud.net/restapi/v0.4", "")
     api.Auth.Set("", "", "")
     
-    servers, err := api.Servers.Get()
+    servers, err := api.Servers.All()
     if err != nil {
         fmt.Println("Error: ", err)
         return

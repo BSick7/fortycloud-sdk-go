@@ -1,3 +1,4 @@
+/*
 package fortycloud
 
 import (
@@ -7,3 +8,4 @@ import (
 func NewApi(url string, formUrl string) *api.Api {
 	return api.NewApi(url, formUrl)
 }
+*/

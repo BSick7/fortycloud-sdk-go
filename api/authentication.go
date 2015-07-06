@@ -3,7 +3,8 @@ package api
 import (
     "time"
     "net/http"
-	"github.com/mdl/fortycloud-sdk-go/internal"
+    "errors"
+    "fmt"
 )
 
 type Authentication struct {
@@ -12,12 +13,12 @@ type Authentication struct {
     password string
     tenantName string
     token string
-    expires Time
+    expires time.Time
 }
 
 func NewAuthentication(api *Api) *Authentication {
     return &Authentication{
-        api: Api,
+        api: api,
     }
 }
 
@@ -32,7 +33,7 @@ func (auth *Authentication) Ensure() error {
         return nil
     }
     
-    result, err := api.Tokens.Post(auth.username, auth.password, auth.tenantName)
+    result, err := auth.api.Tokens.Post(auth.username, auth.password, auth.tenantName)
     if err != nil {
         return err
     }
@@ -43,7 +44,7 @@ func (auth *Authentication) Ensure() error {
     }
     
     auth.token = result.Access.Token.Id
-    auth.expires = time.Parse(time.RFC3339, result.Access.Token.Expires)
+    auth.expires, _ = time.Parse(time.RFC3339, result.Access.Token.Expires)
     return nil
 }
 

@@ -44,7 +44,7 @@ func (endpoint *IpAddressSetsEndpoint) Get(id string) (*IpAddressSet, error) {
 	if err != nil {
 		return nil, err
 	}
-	return result.IpAddressSet, nil
+	return &result.IpAddressSet, nil
 }
 
 type ipAddressSetsPostResult struct {
@@ -56,7 +56,7 @@ func (endpoint *IpAddressSetsEndpoint) Post(set *IpAddressSet) (*IpAddressSet, e
 	if err != nil {
 		return nil, err
 	}
-	return result.IpAddressSet, nil
+	return &result.IpAddressSet, nil
 }
 
 type ipAddressSetsPutResult struct {
@@ -68,7 +68,7 @@ func (endpoint *IpAddressSetsEndpoint) Put(set *IpAddressSet) (*IpAddressSet, er
 	if err != nil {
 		return nil, err
 	}
-	return result.IpAddressSet, nil
+	return &result.IpAddressSet, nil
 }
 
 func (endpoint *IpAddressSetsEndpoint) Delete(id string) error {

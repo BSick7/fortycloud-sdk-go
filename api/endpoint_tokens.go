@@ -34,7 +34,7 @@ type TokensResult struct {
 func NewTokensEndpoint(service *internal.JsonService) *TokensEndpoint {
     return &TokensEndpoint {
         service: service,
-        url: "/tokens"
+        url: "/tokens",
     }
 }
 
@@ -44,6 +44,6 @@ func (endpoint *TokensEndpoint) Post(username string, password string, tenantNam
     body.Auth.Credentials.Password = password
     body.Auth.TenantName = tenantName
 	var result TokensResult
-	err := endpoint.service.Post(endpoint.url, &result, body)
-	return result, err
+	err := endpoint.service.Post(endpoint.url, body, &result)
+	return &result, err
 }

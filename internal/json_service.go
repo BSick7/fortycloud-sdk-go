@@ -45,19 +45,18 @@ func (svc *JsonService) Post(endpoint string, body interface{}, result interface
 	}
 	return svc.do("POST", endpoint, json, result)
 }
-func (svc *JsonService) Put(endpoint string, body interface{}, result interface{}) error {
+func (svc *JsonService) Put(endpoint string, id string, body interface{}, result interface{}) error {
 	json, err := json.Marshal(body)
 	if err != nil {
 		return err
 	}
-	return svc.do("PUT", endpoint, json, result)
+	return svc.do("PUT", endpoint + "/" + id, json, result)
 }
 func (svc *JsonService) Delete(endpoint string, result interface{}) error {
 	return svc.do("DELETE", endpoint, nil, result)
 }
 
 func (svc *JsonService) do(method string, endpoint string, body []byte, result interface{}) error {
-	log.Println(method, svc.url + endpoint)
 	req, err := http.NewRequest(method, svc.url + endpoint, bytes.NewBuffer(body))
 	if err != nil {
 		return err
@@ -70,6 +69,7 @@ func (svc *JsonService) do(method string, endpoint string, body []byte, result i
 		}
 	}
 	
+	log.Println(method, svc.url + endpoint)
 	res, err := svc.client.Do(req)
 	if err != nil {
 		return err
