@@ -1,21 +1,13 @@
-package fortycloud
+package api
 
 import (
-	"encoding/json"
+	"github.com/mdl/fortycloud-sdk-go/internal"
 )
 
 type IpAddressSetsEndpoint struct {
-	service *Service
+	service *internal.JsonService
 	url string
 }
-
-func (s *Service) IpAddressSets() *IpAddressSetsEndpoint {
-	return &IpAddressSetsEndpoint{
-		service: s,
-		url: "/ip-address-sets",
-	}
-}
-
 type IpAddressSet struct {
 	Id string `json:"id,omitempty"`
 	Name string `json:"name"`
@@ -24,21 +16,22 @@ type IpAddressSet struct {
 	ResourceGroup string `json:"resourceGroup"` 
 }
 
+func NewIpAddressSetsEndpoint(service *internal.JsonService) *IpAddressSetsEndpoint {
+    return &IpAddressSetsEndpoint {
+        service: service,
+		url: "/ip-address-sets",
+    }
+}
+
 type ipAddressSetsAllResult struct {
 	IpAddressSets []IpAddressSet `json:"iPAddressSets"`
 }
 func (endpoint *IpAddressSetsEndpoint) All() ([]IpAddressSet, error) {
-	body, err := endpoint.service.Get(endpoint.url)
-	if err != nil {
-		return nil, err
-	}
-	
 	var result ipAddressSetsAllResult
-	err = json.Unmarshal(body, &result)
+	err := endpoint.service.Get(endpoint.url, &result)
 	if err != nil {
 		return nil, err
 	}
-	
 	return result.IpAddressSets, nil
 }
 
@@ -46,17 +39,11 @@ type ipAddressSetsGetResult struct {
 	IpAddressSet IpAddressSet `json:"iPAddressSet"`
 }
 func (endpoint *IpAddressSetsEndpoint) Get(id string) (*IpAddressSet, error) {
-	body, err := endpoint.service.Get(endpoint.url + "/" + id)
-	if err != nil {
-		return nil, err
-	}
-	
 	var result ipAddressSetsGetResult
-	err = json.Unmarshal(body, &result)
+	err := endpoint.service.Get(endpoint.url + "/" + id, &result)
 	if err != nil {
 		return nil, err
 	}
-	
 	return &result.IpAddressSet, nil
 }
 
@@ -64,17 +51,11 @@ type ipAddressSetsPostResult struct {
 	IpAddressSet IpAddressSet `json:"iPAddressSet"`
 }
 func (endpoint *IpAddressSetsEndpoint) Post(set *IpAddressSet) (*IpAddressSet, error) {
-	body, err := endpoint.service.Post(endpoint.url, set)
-	if err != nil {
-		return nil, err
-	}
-	
 	var result ipAddressSetsPostResult
-	err = json.Unmarshal(body, &result)
+	err := endpoint.service.Post(endpoint.url, set, &result)
 	if err != nil {
 		return nil, err
 	}
-	
 	return &result.IpAddressSet, nil
 }
 
@@ -82,17 +63,11 @@ type ipAddressSetsPutResult struct {
 	IpAddressSet IpAddressSet `json:"iPAddressSet"`
 }
 func (endpoint *IpAddressSetsEndpoint) Put(set *IpAddressSet) (*IpAddressSet, error) {
-	body, err := endpoint.service.Put(endpoint.url, set.Id, set)
-	if err != nil {
-		return nil, err
-	}
-	
 	var result ipAddressSetsPutResult
-	err = json.Unmarshal(body, &result)
+	err := endpoint.service.Put(endpoint.url, set.Id, set, &result)
 	if err != nil {
 		return nil, err
 	}
-	
 	return &result.IpAddressSet, nil
 }
 

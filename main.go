@@ -6,24 +6,10 @@ import (
 )
 
 func main() {
-    svc := fortycloud.NewService(nil, &fortycloud.Authentication {
-        Credentials: fortycloud.Credentials {
-            Username: "",
-            Password: "",
-        },
-        Tenant: "",
-    })
+    api := api.NewApi("https://api.fortycloud.net/restapi/v0.4", "")
+    api.Auth.Set("", "", "")
     
-    err := svc.Authenticate()
-    if err != nil {
-        fmt.Println("Error: ", err)
-        return
-    }
-    fmt.Println(svc.Auth.Token)
-    fmt.Println(svc.Auth.Expires)
-    
-    var servers []fortycloud.Server
-    servers, err = svc.Servers().All()
+    servers, err := api.Servers.All()
     if err != nil {
         fmt.Println("Error: ", err)
         return
@@ -31,7 +17,8 @@ func main() {
     fmt.Printf("%+v", servers)
     fmt.Println("")
     
-    script, err := svc.Scripts().Get("Default Global Settings", true)
+    
+    script, err := api.Scripts.Get("Default Global Settings", true)
     if err != nil {
         fmt.Println("Error: ", err)
         return
