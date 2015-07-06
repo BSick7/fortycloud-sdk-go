@@ -23,7 +23,7 @@ func main() {
     fmt.Println(svc.Auth.Expires)
     
     var servers []fortycloud.Server
-    servers, err = svc.Servers().Index()
+    servers, err = svc.Servers().All()
     if err != nil {
         fmt.Println("Error: ", err)
         return
