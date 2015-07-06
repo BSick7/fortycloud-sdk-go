@@ -1,6 +1,7 @@
 package api
 
 import (
+    "log"
     "time"
     "net/http"
     "errors"
@@ -44,7 +45,10 @@ func (auth *Authentication) Ensure() error {
     }
     
     auth.token = result.Access.Token.Id
-    auth.expires, _ = time.Parse(time.RFC3339, result.Access.Token.Expires)
+    auth.expires, err = time.Parse("2006-01-02T15:04:05-0700", result.Access.Token.Expires)
+    if err != nil {
+        log.Println("Could not parse auth expiration. ", err)
+    }
     return nil
 }
 
@@ -57,10 +61,13 @@ func (auth *Authentication) SecureRequest(method string, endpoint string, req *h
 }
 
 func (auth *Authentication) isAuthenticated() bool {
-    if len(auth.token) > 0 {
-        if auth.expires.Sub(time.Now()) > 0 {
-            return true
-        }
+    if len(auth.token) <= 0 {
+        log.Println("No auth token")
+        return false
     }
-    return false
+    if auth.expires.Sub(time.Now()) < 0 {
+        log.Println("Expired token")
+        return false
+    }
+    return true
 }
