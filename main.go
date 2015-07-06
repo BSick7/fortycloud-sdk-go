@@ -29,4 +29,20 @@ func main() {
         return
     }
     fmt.Printf("%+v", servers)
+    fmt.Println("")
+    
+    var sets []fortycloud.IpAddressSet
+    sets, err = svc.IpAddressSets().All()
+    if err != nil {
+        fmt.Println("Error: ", err)
+        return
+    }
+    fmt.Printf("%+v\n", sets)
+    fmt.Println("")
+    
+    err = svc.IpAddressSets().Delete("3")
+    if err != nil {
+        fmt.Println("Error: ", err)
+        return
+    }
 }

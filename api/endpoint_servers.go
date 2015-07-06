@@ -16,7 +16,7 @@ func (s *Service) Servers() *ServersEndpoint {
 	}
 }
 
-type allResult struct {
+type serversAllResult struct {
 	Servers []Server `json:"servers"`
 }
 type Server struct {
@@ -38,13 +38,13 @@ type Server struct {
 	Description string `json:"description"`
 	Id string `json:"id"`
 }
-func (ser *ServersEndpoint) All() ([]Server, error) {
-	body, err := ser.service.Get(ser.url)
+func (endpoint *ServersEndpoint) All() ([]Server, error) {
+	body, err := endpoint.service.Get(endpoint.url)
 	if err != nil {
 		return nil, err
 	}
 	
-	var result allResult
+	var result serversAllResult
 	err = json.Unmarshal(body, &result)
 	if err != nil {
 		return nil, err
