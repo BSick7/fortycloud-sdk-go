@@ -39,10 +39,4 @@ func main() {
     }
     fmt.Printf("%+v\n", sets)
     fmt.Println("")
-    
-    err = svc.IpAddressSets().Delete("3")
-    if err != nil {
-        fmt.Println("Error: ", err)
-        return
-    }
 }
