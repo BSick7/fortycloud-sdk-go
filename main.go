@@ -6,6 +6,18 @@ import (
 )
 
 func main() {
+    api := api.NewApi("https://api.fortycloud.net/restapi/v0.4", "")
+    api.Auth.Set("", "", "")
+    
+    servers, err := api.Servers.Get()
+    if err != nil {
+        fmt.Println("Error: ", err)
+        return
+    }
+    fmt.Printf("%+v", servers)
+    fmt.Println("")
+    
+    /*
     svc := fortycloud.NewService(nil, &fortycloud.Authentication {
         Credentials: fortycloud.Credentials {
             Username: "",
@@ -38,4 +50,5 @@ func main() {
     }
     fmt.Printf("%+v\n", script)
     fmt.Println("")
+    */
 }

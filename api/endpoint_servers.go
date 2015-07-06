@@ -1,24 +1,14 @@
-package fortycloud
+package api
 
 import (
-	"encoding/json"
+	"github.com/mdl/fortycloud-sdk-go/internal"
 )
 
 type ServersEndpoint struct {
-	service *Service
+	service *internal.JsonService
 	url string
 }
 
-func (s *Service) Servers() *ServersEndpoint {
-	return &ServersEndpoint{
-		service: s,
-		url: "/servers",
-	}
-}
-
-type serversAllResult struct {
-	Servers []Server `json:"servers"`
-}
 type Server struct {
 	ResourceGroupName string `json:"resourceGroupName"`
 	PublicIP string `json:"publicIP"`
@@ -38,17 +28,23 @@ type Server struct {
 	Description string `json:"description"`
 	Id string `json:"id"`
 }
+
+type serversAllResult struct {
+	Servers []Server `json:"servers"`	
+}
+
+func NewServersEndpoint(service *internal.JsonService) *ServersEndpoint {
+    return &ServersEndpoint {
+        service: service,
+		url: "/servers",
+    }
+}
+
 func (endpoint *ServersEndpoint) All() ([]Server, error) {
-	body, err := endpoint.service.Get(endpoint.url)
-	if err != nil {
-		return nil, err
-	}
-	
 	var result serversAllResult
-	err = json.Unmarshal(body, &result)
+	err := endpoint.service.Get(endpoint.url, &result)
 	if err != nil {
 		return nil, err
 	}
-	
 	return result.Servers, nil
 }
