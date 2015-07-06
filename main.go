@@ -18,5 +18,6 @@ func main() {
     if err != nil {
         fmt.Println("Error: ", err)
     }
-    fmt.Println("Done")
+    fmt.Println(svc.Auth.Token)
+    fmt.Println(svc.Auth.Expires)
 }

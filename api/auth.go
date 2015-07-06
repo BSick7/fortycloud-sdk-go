@@ -1,6 +1,7 @@
 package fortycloud
 
 import (
+    "log"
     "net/http"
     "io/ioutil"
     "encoding/json"
@@ -10,8 +11,8 @@ import (
 )
 
 type Credentials struct {
-    Username string
-    Password string
+    Username string `json:"username"`
+    Password string `json:"password"`
 }
 type Authentication struct {
     Credentials
@@ -20,19 +21,20 @@ type Authentication struct {
     Expires string
 }
 
+type authPost struct {
+    Auth authRequest `json:"auth"`
+}
 type authRequest struct {
     Credentials Credentials `json:"passwordCredentials"`
     Tenant string `json:"tenantName"`
 }
-type successResult struct {
+type authResult struct {
     Access struct {
         Token struct {
             Id string
             Expires string
         }
     }
-}
-type failResult struct {
     IdentityFault struct {
         Code string
         Message string
@@ -43,10 +45,18 @@ type failResult struct {
 func (a *Authentication) Do(s *Service) error {
     url := API_URL + "/v0.4/tokens"
     
-    jsonStr, err := json.Marshal(&authRequest {
-        Credentials: a.Credentials,
-        Tenant: a.Tenant,
+    jsonStr, err := json.Marshal(&authPost {
+        Auth: authRequest {
+            Credentials: a.Credentials,
+            Tenant: a.Tenant,
+        },
     })
+    if err != nil {
+        return err
+    }
+    
+    log.Printf("%s", jsonStr)
+    
     req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
     req.Header.Set("Content-Type", "application/json")
     
@@ -59,16 +69,17 @@ func (a *Authentication) Do(s *Service) error {
     
     body, _ := ioutil.ReadAll(res.Body)
     
-    var result successResult
+    log.Printf("%s", body)
+    
+    var result authResult
     err = json.Unmarshal(body, &result)
     if err != nil {
-        var result2 failResult
-        err = json.Unmarshal(body, &result2)
-        if err != nil {
-            return err
-        }
-        fault := result2.IdentityFault
-        return errors.New(fmt.Sprintf("[%s] '%s': %s", fault.Code, fault.Message, fault.Details))
+        return err
+    }
+    
+    fault := result.IdentityFault
+    if len(fault.Code) > 0 {
+        return errors.New(fmt.Sprintf("[%s] '%s': %s", fault.Code, fault.Message, fault.Details))   
     }
     
     a.Token = result.Access.Token.Id
