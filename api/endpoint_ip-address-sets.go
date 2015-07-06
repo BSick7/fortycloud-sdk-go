@@ -12,7 +12,7 @@ type IpAddressSetsEndpoint struct {
 func (s *Service) IpAddressSets() *IpAddressSetsEndpoint {
 	return &IpAddressSetsEndpoint{
 		service: s,
-		url: API_URL + "/v0.4/ip-address-sets",
+		url: "/ip-address-sets",
 	}
 }
 

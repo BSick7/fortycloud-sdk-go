@@ -31,12 +31,11 @@ func main() {
     fmt.Printf("%+v", servers)
     fmt.Println("")
     
-    var sets []fortycloud.IpAddressSet
-    sets, err = svc.IpAddressSets().All()
+    script, err := svc.Scripts().Get("Default Global Settings", true)
     if err != nil {
         fmt.Println("Error: ", err)
         return
     }
-    fmt.Printf("%+v\n", sets)
+    fmt.Printf("%+v\n", script)
     fmt.Println("")
 }

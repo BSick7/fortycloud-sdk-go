@@ -9,11 +9,8 @@ import (
     "fmt"
 )
 
-const (
-    API_URL = "https://api.fortycloud.net/restapi"
-)
-
 type Service struct {
+    Url string
 	Client *http.Client
     Auth *Authentication
 }
@@ -23,6 +20,7 @@ func NewService(client *http.Client, auth *Authentication) *Service {
         client = http.DefaultClient
     }
     return &Service{
+        Url: "https://api.fortycloud.net/restapi/v0.4",
         Client: client,
         Auth: auth,
     }
@@ -33,7 +31,7 @@ func (s *Service) Authenticate() error {
 }
 
 func (s *Service) Get(url string) ([]byte, error) {
-    req, err := http.NewRequest("GET", url, nil)
+    req, err := http.NewRequest("GET", s.Url + url, nil)
     req.Header.Set("Content-Type", "application/json")
     req.Header.Add("X-Auth-Token", s.Auth.Token)
     
@@ -53,7 +51,7 @@ func (s *Service) Post(url string, body interface{}) ([]byte, error) {
         return nil, err
     }
     
-    req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonBody))
+    req, err := http.NewRequest("POST", s.Url + url, bytes.NewBuffer(jsonBody))
     req.Header.Set("Content-Type", "application/json")
     req.Header.Add("X-Auth-Token", s.Auth.Token)
     
@@ -73,7 +71,7 @@ func (s *Service) Put(url string, id string, body interface{}) ([]byte, error) {
         return nil, err
     }
     
-    req, err := http.NewRequest("POST", url + "/" + id, bytes.NewBuffer(jsonBody))
+    req, err := http.NewRequest("PUT", s.Url + url + "/" + id, bytes.NewBuffer(jsonBody))
     req.Header.Set("Content-Type", "application/json")
     req.Header.Add("X-Auth-Token", s.Auth.Token)
     
@@ -88,7 +86,7 @@ func (s *Service) Put(url string, id string, body interface{}) ([]byte, error) {
 }
 
 func (s *Service) Delete(url string, id string) error {
-    req, err := http.NewRequest("DELETE", url + "/" + id, nil)
+    req, err := http.NewRequest("DELETE", s.Url + url + "/" + id, nil)
     req.Header.Set("Content-Type", "application/json")
     req.Header.Add("X-Auth-Token", s.Auth.Token)
     

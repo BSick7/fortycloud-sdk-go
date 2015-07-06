@@ -43,8 +43,6 @@ type authResult struct {
 }
 
 func (a *Authentication) Do(s *Service) error {
-    url := API_URL + "/v0.4/tokens"
-    
     jsonStr, err := json.Marshal(&authPost {
         Auth: authRequest {
             Credentials: a.Credentials,
@@ -57,7 +55,7 @@ func (a *Authentication) Do(s *Service) error {
     
     log.Printf("%s", jsonStr)
     
-    req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
+    req, err := http.NewRequest("POST", s.Url + "/tokens", bytes.NewBuffer(jsonStr))
     req.Header.Set("Content-Type", "application/json")
     
     res, err := s.Client.Do(req)

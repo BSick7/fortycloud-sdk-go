@@ -12,7 +12,7 @@ type ServersEndpoint struct {
 func (s *Service) Servers() *ServersEndpoint {
 	return &ServersEndpoint{
 		service: s,
-		url: API_URL + "/v0.4/servers",
+		url: "/servers",
 	}
 }
 
