@@ -2,7 +2,6 @@ package fortycloud
 
 import (
     "net/http"
-    "encoding/json"
 )
 
 const (
@@ -10,16 +9,20 @@ const (
 )
 
 type Service struct {
-	client *http.Client
-    auth *Authentication
+	Client *http.Client
+    Auth *Authentication
 }
 
-func NewService(c *http.Client, auth *Authentication) *Service {
-    if c == nil {
-        c = http.DefaultClient
+func NewService(client *http.Client, auth *Authentication) *Service {
+    if client == nil {
+        client = http.DefaultClient
     }
     return &Service{
-        client: c,
-        auth: auth
+        Client: client,
+        Auth: auth,
     }
+}
+
+func (s *Service) Authenticate() error {
+    return s.Auth.Do(s)
 }
