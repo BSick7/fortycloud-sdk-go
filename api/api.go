@@ -10,9 +10,9 @@ import (
 type Api struct {
 	session1 *rest.Session
 	session2 *forms.Session
-	Tokens *rest.TokensEndpoint
 	Scripts *rest.ScriptsEndpoint
 	Servers *rest.ServersEndpoint
+	PrivateSubnets *forms.PrivateSubnetsEndpoint
 }
 
 func NewApi(url string, formUrl string) *Api {
@@ -38,9 +38,14 @@ func configureRestApi(ap *Api, url string) {
 }
 
 func configureFormsApi(ap *Api, url string) {
-	ap.session2 = forms.NewSession(url + "/authenticate")
+	ap.session2 = forms.NewSession(url)
 	svc := internal.NewFormService(url + "/api", nil)
 	svc.InjectRequest(func(method string, endpoint string, req *http.Request) error {
 		return ap.session2.SecureRequest(method, endpoint, req)
 	})
+	svc.InjectResponse(func(method string, endpoint string, res *http.Response) error {
+		ap.session2.Cookies.Merge(res.Cookies())
+		return nil
+	})
+	ap.PrivateSubnets = forms.NewPrivateSubnetsEndpoint(svc)
 }

@@ -1,7 +1,6 @@
 package forms
 
 import (
-	"net/http"
 	"github.com/mdl/fortycloud-sdk-go/internal"
 )
 
@@ -11,23 +10,21 @@ type UserPassEndpoint struct {
 }
 
 type UserPassResult struct {
-	Cookies []*http.Cookie
 }
 
 func NewUserPassEndpoint(service *internal.FormService) *UserPassEndpoint {
 	return &UserPassEndpoint {
 		service: service,
-		url: "/userpass",
+		url: "/authenticate/userpass",
 	}
 }
 
-func (endpoint *UserPassEndpoint) Post(username string, password string, tenantName string) (*UserPassResult, error) {
+func (endpoint *UserPassEndpoint) Post(username string, password string, tenantName string, authenticityToken string) error {
 	body := map[string]string {
 		"username": username,
 		"password": password,
+		"authenticityToken": authenticityToken,
 	}
 	var result UserPassResult
-	cookies, err := endpoint.service.Post(endpoint.url, body, &result)
-	result.Cookies = cookies
-	return &result, err
+	return endpoint.service.Post(endpoint.url, body, &result)
 }
