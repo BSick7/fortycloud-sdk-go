@@ -8,8 +8,6 @@ import (
 	"io/ioutil"
 )
 
-type RequestSite func(method string, endpoint string, req *http.Request) error
-
 type JsonService struct {
 	url string
 	client *http.Client

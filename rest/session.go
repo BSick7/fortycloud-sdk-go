@@ -19,9 +19,9 @@ type Session struct {
 }
 
 func NewSession(url string) *Session {
-	session := new(Session)
-	session.tokens = NewTokensEndpoint(internal.NewJsonService(url, nil))
-	return session
+    return &Session{
+        tokens: NewTokensEndpoint(internal.NewJsonService(url, nil)),
+    }
 }
 
 func (session *Session) Set(username string, password string, tenantName string) {
