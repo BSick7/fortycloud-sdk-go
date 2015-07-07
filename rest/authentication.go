@@ -1,4 +1,4 @@
-package api
+package rest
 
 import (
     "log"
@@ -9,7 +9,7 @@ import (
 )
 
 type Authentication struct {
-	api *Api
+    tokens *TokensEndpoint
     username string
     password string
     tenantName string
@@ -17,9 +17,9 @@ type Authentication struct {
     expires time.Time
 }
 
-func NewAuthentication(api *Api) *Authentication {
+func NewAuthentication(tokens *TokensEndpoint) *Authentication {
     return &Authentication{
-        api: api,
+        tokens: tokens,
     }
 }
 
@@ -34,7 +34,7 @@ func (auth *Authentication) Ensure() error {
         return nil
     }
     
-    result, err := auth.api.Tokens.Post(auth.username, auth.password, auth.tenantName)
+    result, err := auth.tokens.Post(auth.username, auth.password, auth.tenantName)
     if err != nil {
         return err
     }

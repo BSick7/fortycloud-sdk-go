@@ -6,8 +6,8 @@ import (
 )
 
 func main() {
-    api := api.NewApi("https://api.fortycloud.net/restapi/v0.4", "")
-    api.Auth.Set("", "", "")
+    api := fortycloud.NewApi("https://api.fortycloud.net/restapi/v0.4", "")
+    api.SetCredentials("", "", "")
     
     servers, err := api.Servers.All()
     if err != nil {
