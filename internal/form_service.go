@@ -78,7 +78,7 @@ func (svc *FormService) do(method string, endpoint string, data url.Values, resu
 		}
 	}
 
-	log.Println(method, svc.url+endpoint)
+	log.Println(method, req.URL)
 	res, err := svc.client.Do(req)
 	if err != nil {
 		return err

@@ -67,7 +67,7 @@ func (svc *JsonService) do(method string, endpoint string, body []byte, result i
 		}
 	}
 
-	log.Println(method, svc.url+endpoint)
+	log.Println(method, req.URL)
 	res, err := svc.client.Do(req)
 	if err != nil {
 		return err
