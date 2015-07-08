@@ -14,6 +14,7 @@ type Api struct {
 	Scripts        *rest.ScriptsEndpoint
 	Servers        *rest.ServersEndpoint
 	PrivateSubnets *forms.PrivateSubnetsEndpoint
+	Connections	   *forms.ConnectionsEndpoint
 }
 
 func NewApi(url string, formUrl string) *Api {
@@ -49,6 +50,7 @@ func configureFormsApi(ap *Api, url string) {
 		return ap.session2.SecureRequest(method, endpoint, req)
 	})
 	ap.PrivateSubnets = forms.NewPrivateSubnetsEndpoint(svc)
+	ap.Connections = forms.NewConnectionsEndpoint(svc)
 }
 
 func createClient() *http.Client {

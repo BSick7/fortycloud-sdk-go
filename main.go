@@ -18,6 +18,15 @@ func main() {
 	for _,subnet := range subnets {
     	fmt.Printf("%+v\n", subnet)
 	}
+	
+	conns, err2 := api.Connections.All(0, 0, nil)
+	if err2 != nil {
+		fmt.Println("Error: ", err2)
+		return
+	}
+	for _,conn := range conns {
+		fmt.Printf("%+v\n", conn)
+	}
     
     /*
     servers, err := api.Servers.All()
