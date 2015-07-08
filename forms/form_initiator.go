@@ -1,23 +1,23 @@
 package forms
 
 import (
+	"io/ioutil"
 	"log"
 	"net/http"
-	"io/ioutil"
 	"regexp"
 )
 
 type FormInitiator struct {
-	url string
+	url    string
 	client *http.Client
 }
 
 func NewFormInitiator(url string, client *http.Client) *FormInitiator {
-    if client == nil {
-        client = http.DefaultClient
-    }
+	if client == nil {
+		client = http.DefaultClient
+	}
 	return &FormInitiator{
-		url: url,
+		url:    url,
 		client: client,
 	}
 }
@@ -27,29 +27,29 @@ type InitiatorResult struct {
 }
 
 func (initiator *FormInitiator) Initiate() (*InitiatorResult, error) {
-	req, err := http.NewRequest("GET", initiator.url + "/login", nil)
+	req, err := http.NewRequest("GET", initiator.url+"/login", nil)
 	if err != nil {
 		return nil, err
 	}
-	
-	log.Println("GET ", initiator.url + "/login")
+
+	log.Println("GET ", initiator.url+"/login")
 	res, err := initiator.client.Do(req)
 	if err != nil {
 		return nil, err
 	}
-	
-    defer res.Body.Close()
-    resbody, _ := ioutil.ReadAll(res.Body)
-	
+
+	defer res.Body.Close()
+	resbody, _ := ioutil.ReadAll(res.Body)
+
 	token, err := findAuthenticityToken(string(resbody))
 	if err != nil {
 		return nil, err
 	}
-	
+
 	result := &InitiatorResult{
 		AuthenticityToken: token,
 	}
-	
+
 	return result, nil
 }
 

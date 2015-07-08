@@ -6,13 +6,13 @@ import (
 
 type PrivateSubnetsEndpoint struct {
 	service *internal.FormService
-	url string
+	url     string
 }
 
 func NewPrivateSubnetsEndpoint(service *internal.FormService) *PrivateSubnetsEndpoint {
-	return &PrivateSubnetsEndpoint {
+	return &PrivateSubnetsEndpoint{
 		service: service,
-		url: "/EntityPrivateSubnet",
+		url:     "/EntityPrivateSubnet",
 	}
 }
 
@@ -21,12 +21,13 @@ type privateSubnetsAllResult struct {
 	Objects []*PrivateSubnet `json:"objects"`
 }
 type PrivateSubnet struct {
-	Id string `json:"id"`
-	Name string `json:"name"`
-	Source string `json:"source"`
-	Subnet string `json:"subnet"`
+	Id      string `json:"id"`
+	Name    string `json:"name"`
+	Source  string `json:"source"`
+	Subnet  string `json:"subnet"`
 	Version string `json:"version"`
 }
+
 func (endpoint *PrivateSubnetsEndpoint) All() ([]*PrivateSubnet, error) {
 	var result privateSubnetsAllResult
 	err := endpoint.service.Post(endpoint.url, nil, &result)

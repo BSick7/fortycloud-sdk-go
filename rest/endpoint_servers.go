@@ -6,38 +6,38 @@ import (
 
 type ServersEndpoint struct {
 	service *internal.JsonService
-	url string
+	url     string
 }
 
 type Server struct {
-	ResourceGroupName string `json:"resourceGroupName"`
-	PublicIP string `json:"publicIP"`
-	OverlayAddress string `json:"overlayAddress"`
-	Region string `json:"region"`
-	Enable bool `json:"enable"`
-	AllowSSHToEveryone bool `json:"allowSSHToEveryone"`
-	PermitRules string `json:"permitRules"`
-	RouteAllTrafficViaGW bool `json:"routeAllTrafficViaGW"`
-	CloudAccount string `json:"cloudAccount"`
-	IsGW bool `json:"isGW"`
-	PrivateIP string `json:"privateIP"`
-	ForcePublicIP bool `json:"forcePublicIP"`
-	IdentityServerName string `json:"identityServerName"`
-	State string `json:"state"`
-	Name string `json:"name"`
-	Description string `json:"description"`
-	Id string `json:"id"`
+	ResourceGroupName    string `json:"resourceGroupName"`
+	PublicIP             string `json:"publicIP"`
+	OverlayAddress       string `json:"overlayAddress"`
+	Region               string `json:"region"`
+	Enable               bool   `json:"enable"`
+	AllowSSHToEveryone   bool   `json:"allowSSHToEveryone"`
+	PermitRules          string `json:"permitRules"`
+	RouteAllTrafficViaGW bool   `json:"routeAllTrafficViaGW"`
+	CloudAccount         string `json:"cloudAccount"`
+	IsGW                 bool   `json:"isGW"`
+	PrivateIP            string `json:"privateIP"`
+	ForcePublicIP        bool   `json:"forcePublicIP"`
+	IdentityServerName   string `json:"identityServerName"`
+	State                string `json:"state"`
+	Name                 string `json:"name"`
+	Description          string `json:"description"`
+	Id                   string `json:"id"`
 }
 
 type serversAllResult struct {
-	Servers []Server `json:"servers"`	
+	Servers []Server `json:"servers"`
 }
 
 func NewServersEndpoint(service *internal.JsonService) *ServersEndpoint {
-    return &ServersEndpoint {
-        service: service,
-		url: "/servers",
-    }
+	return &ServersEndpoint{
+		service: service,
+		url:     "/servers",
+	}
 }
 
 func (endpoint *ServersEndpoint) All() ([]Server, error) {
