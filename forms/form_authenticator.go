@@ -45,7 +45,7 @@ func (authenticator *FormAuthenticator) Authenticate(username string, password s
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("Cache-Control", "no-cache")
 
-	log.Println("POST ", url)
+	log.Println("POST ", req.URL)
 	res, err := authenticator.client.Do(req)
 	if err != nil {
 		return nil, err

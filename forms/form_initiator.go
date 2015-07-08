@@ -32,7 +32,7 @@ func (initiator *FormInitiator) Initiate() (*InitiatorResult, error) {
 		return nil, err
 	}
 
-	log.Println("GET ", initiator.url+"/login")
+	log.Println("GET ", req.URL)
 	res, err := initiator.client.Do(req)
 	if err != nil {
 		return nil, err
