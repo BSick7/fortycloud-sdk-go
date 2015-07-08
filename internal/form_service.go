@@ -14,7 +14,6 @@ type FormService struct {
 	url           string
 	client        *http.Client
 	requestSites  []RequestSite
-	responseSites []ResponseSite
 }
 
 func NewFormService(url string, client *http.Client) *FormService {
@@ -34,9 +33,6 @@ func NewFormService(url string, client *http.Client) *FormService {
 
 func (svc *FormService) InjectRequest(action RequestSite) {
 	svc.requestSites = append(svc.requestSites, action)
-}
-func (svc *FormService) InjectResponse(action ResponseSite) {
-	svc.responseSites = append(svc.responseSites, action)
 }
 
 func (svc *FormService) Get(endpoint string, result interface{}) error {
@@ -86,13 +82,6 @@ func (svc *FormService) do(method string, endpoint string, data url.Values, resu
 
 	defer res.Body.Close()
 	resbody, _ := ioutil.ReadAll(res.Body)
-
-	for _, site := range svc.responseSites {
-		err := site(method, endpoint, res)
-		if err != nil {
-			return err
-		}
-	}
 
 	json.Unmarshal(resbody, result)
 	return nil
