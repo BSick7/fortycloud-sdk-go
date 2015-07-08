@@ -1,6 +1,8 @@
 package forms
 
 import (
+	"fmt"
+	"errors"
 	"github.com/mdl/fortycloud-sdk-go/internal"
 )
 
@@ -22,7 +24,7 @@ type privateSubnetsAllRequest struct {
 	Order string `json:"order"`
 	OrderBy string `json:"orderBy"`
 	Rows int `json:"rows"`
-	Where []string `json:"where"`
+	Where []FilterClause `json:"where"`
 }
 type privateSubnetsAllResult struct {
 	EntityAllResult
@@ -31,18 +33,24 @@ type privateSubnetsAllResult struct {
 type PrivateSubnet struct {
 	Id      int `json:"id"`
 	Name    string `json:"name"`
+	Description string `json:"description"`
+	ActualSubnet string `json:"actualSubnet"`
 	Source  string `json:"source"`
 	Subnet  string `json:"subnet"`
+	NatDisabled bool `json:"sNatDisabled"`
 	Version int `json:"version"`
 }
 
-func (endpoint *PrivateSubnetsEndpoint) All() ([]*PrivateSubnet, error) {
+func (endpoint *PrivateSubnetsEndpoint) All(filters []FilterClause) ([]*PrivateSubnet, error) {
+	if filters == nil {
+		filters = []FilterClause{}
+	}
 	body := &privateSubnetsAllRequest{
 		Offset: 0,
 		Order: "DESC",
 		OrderBy: "id",
 		Rows: 100,
-		Where: []string{},
+		Where: filters,
 	}
 	
 	var result privateSubnetsAllResult
@@ -51,4 +59,58 @@ func (endpoint *PrivateSubnetsEndpoint) All() ([]*PrivateSubnet, error) {
 		return nil, err
 	}
 	return result.Objects, nil
+}
+
+func (endpoint *PrivateSubnetsEndpoint) Create(subnet *PrivateSubnet) (*PrivateSubnet, error) {
+	err := endpoint.put(&subnetPutObject {
+		Name: subnet.Name,
+		Description: subnet.Description,
+		ActualSubnet: subnet.ActualSubnet,
+		Source: subnet.Source,
+		Subnet: subnet.Subnet,
+		NatDisabled: subnet.NatDisabled,
+	})
+	if err != nil {
+		return nil, err
+	}
+	
+	filters := []FilterClause{
+		NewFilterLike("name", subnet.Name+"%"),
+		NewFilterLike("subnet", subnet.Subnet+"%"),
+	}
+	matches, err := endpoint.All(filters)
+	if err != nil {
+		return nil, err
+	}
+	
+	if len(matches) <= 0 {
+		return nil, errors.New("Could not get created subnet.")
+	}
+	return matches[0], nil
+}
+
+type subnetPutObject struct {
+	Name string `json:"name"`
+	Description string `json:"description"`
+	ActualSubnet string `json:"actualSubnet"`
+	GwId string `json:"gw.id"`
+	Source string `json:"source"`
+	Subnet string `json:"subnet"`
+	NatDisabled bool `json:"sNatDisabled"`
+	SubnetRoleId string `json:"subnetRole.id"`
+}
+type privateSubnetPutResult struct {
+	Result string `json:"result"`
+	Total int `json:"total"`
+}
+func (endpoint *PrivateSubnetsEndpoint) put(subnet *subnetPutObject) error {
+	var result privateSubnetPutResult
+	_, err := endpoint.service.Put(endpoint.url, "", subnet, &result)
+	if err != nil {
+		return err
+	}
+	if result.Result != "OK" {
+		return errors.New(fmt.Sprintf("Failed subnet put: %s", result.Result))
+	}
+	return nil
 }

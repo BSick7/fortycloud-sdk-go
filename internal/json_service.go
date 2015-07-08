@@ -48,7 +48,11 @@ func (svc *JsonService) Put(endpoint string, id string, body interface{}, result
 	if err != nil {
 		return nil, err
 	}
-	return svc.do("PUT", endpoint+"/"+id, json, result)
+	url := endpoint
+	if len(id) > 0 {
+		url = url+"/"+id
+	}
+	return svc.do("PUT", url, json, result)
 }
 func (svc *JsonService) Delete(endpoint string, result interface{}) (*http.Response, error) {
 	return svc.do("DELETE", endpoint, nil, result)

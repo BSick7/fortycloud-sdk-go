@@ -23,9 +23,12 @@ func NewApi(url string, formUrl string) *Api {
 	return ap
 }
 
-func (ap *Api) SetCredentials(username string, password string, tenantName string) {
+func (ap *Api) SetApiCredentials(username string, password string, tenantName string) {
 	ap.session1.Set(username, password, tenantName)
-	ap.session2.Set(username, password, tenantName)
+}
+
+func (ap *Api) SetFormsCredentials(username string, password string) {
+	ap.session2.Set(username, password)
 }
 
 func configureRestApi(ap *Api, url string) {

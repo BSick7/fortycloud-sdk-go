@@ -11,7 +11,6 @@ type Session struct {
 	authenticator     *FormAuthenticator
 	username          string
 	password          string
-	tenantName        string
 	authenticityToken string
 	csrfToken         string
 	userId            int
@@ -28,10 +27,9 @@ func NewSession(url string, client *http.Client) *Session {
 	return session
 }
 
-func (session *Session) Set(username string, password string, tenantName string) {
+func (session *Session) Set(username string, password string) {
 	session.username = username
 	session.password = password
-	session.tenantName = tenantName
 }
 
 func (session *Session) SecureRequest(method string, endpoint string, req *http.Request) error {

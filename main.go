@@ -7,15 +7,17 @@ import (
 
 func main() {
     api := fortycloud.NewApi("https://api.fortycloud.net/restapi/v0.4", "https://www1.fortycloud.net")
-	api.SetCredentials("", "", "")
-    
-    subnets, err := api.PrivateSubnets.All()
+	api.SetApiCredentials("", "", "")
+	api.SetFormsCredentials("", "")
+	
+    subnets, err := api.PrivateSubnets.All(nil)
     if err != nil {
         fmt.Println("Error: ", err)
         return
     }
-    fmt.Printf("%+v", subnets[0])
-    fmt.Println("")
+	for _,subnet := range subnets {
+    	fmt.Printf("%+v\n", subnet)
+	}
     
     /*
     servers, err := api.Servers.All()
