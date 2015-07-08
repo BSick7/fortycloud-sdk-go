@@ -89,6 +89,22 @@ func (endpoint *PrivateSubnetsEndpoint) Create(subnet *PrivateSubnet) (*PrivateS
 	return matches[0], nil
 }
 
+type privateSubnetDeleteResult struct {
+	Result string `json:"result"`
+	Total int `json:"total"`
+}
+func (endpoint *PrivateSubnetsEndpoint) Delete(id int) error {
+	var result privateSubnetDeleteResult
+	_, err := endpoint.service.Delete(endpoint.url, []int{id}, &result)
+	if err != nil {
+		return err
+	}
+	if result.Result != "OK" {
+		return errors.New(fmt.Sprintf("Failed subnet delete: %s", result.Result))
+	}
+	return nil
+}
+
 type subnetPutObject struct {
 	Name string `json:"name"`
 	Description string `json:"description"`

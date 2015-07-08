@@ -54,8 +54,15 @@ func (svc *JsonService) Put(endpoint string, id string, body interface{}, result
 	}
 	return svc.do("PUT", url, json, result)
 }
-func (svc *JsonService) Delete(endpoint string, result interface{}) (*http.Response, error) {
-	return svc.do("DELETE", endpoint, nil, result)
+func (svc *JsonService) Delete(endpoint string, body interface{}, result interface{}) (*http.Response, error) {
+	if body == nil {
+		return svc.do("DELETE", endpoint, nil, result)
+	}
+	json, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	return svc.do("DELETE", endpoint, json, result)
 }
 
 func (svc *JsonService) do(method string, endpoint string, body []byte, result interface{}) (*http.Response, error) {

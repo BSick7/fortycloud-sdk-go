@@ -76,6 +76,6 @@ func (endpoint *IpAddressSetsEndpoint) Put(set *IpAddressSet) (*IpAddressSet, er
 }
 
 func (endpoint *IpAddressSetsEndpoint) Delete(id string) error {
-	_, err := endpoint.service.Delete(endpoint.url, id)
+	_, err := endpoint.service.Delete(endpoint.url, nil, id)
 	return err
 }
