@@ -1,7 +1,7 @@
 package forms
 
 import (
-	"log"
+	"errors"
 	"net/http"
 	"strconv"
 )
@@ -67,8 +67,10 @@ func (session *Session) ensure() error {
 	}
 	session.userId = result2.UserId
 	session.accountId = result2.AccountId
-	log.Println("Form Authentication status: ", result2.AccountId > -1)
-
+	
+	if result2.AccountId < 0 {
+		return errors.New("Could not authenticate.")
+	}
 	return nil
 }
 

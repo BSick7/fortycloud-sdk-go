@@ -14,7 +14,7 @@ func main() {
         fmt.Println("Error: ", err)
         return
     }
-    fmt.Printf("%+v", subnets)
+    fmt.Printf("%+v", subnets[0])
     fmt.Println("")
     
     /*

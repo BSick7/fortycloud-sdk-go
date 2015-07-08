@@ -29,11 +29,11 @@ type privateSubnetsAllResult struct {
 	Objects []*PrivateSubnet `json:"objects"`
 }
 type PrivateSubnet struct {
-	Id      string `json:"id"`
+	Id      int `json:"id"`
 	Name    string `json:"name"`
 	Source  string `json:"source"`
 	Subnet  string `json:"subnet"`
-	Version string `json:"version"`
+	Version int `json:"version"`
 }
 
 func (endpoint *PrivateSubnetsEndpoint) All() ([]*PrivateSubnet, error) {
@@ -41,7 +41,8 @@ func (endpoint *PrivateSubnetsEndpoint) All() ([]*PrivateSubnet, error) {
 		Offset: 0,
 		Order: "DESC",
 		OrderBy: "id",
-		Rows: 10,
+		Rows: 100,
+		Where: []string{},
 	}
 	
 	var result privateSubnetsAllResult
