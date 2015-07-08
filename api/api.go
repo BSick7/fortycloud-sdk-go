@@ -41,7 +41,7 @@ func configureRestApi(ap *Api, url string) {
 func configureFormsApi(ap *Api, url string) {
 	client := createClient()
 	ap.session2 = forms.NewSession(url, client)
-	svc := internal.NewFormService(url+"/api", client)
+	svc := internal.NewJsonService(url+"/api", client)
 	svc.InjectRequest(func(method string, endpoint string, req *http.Request) error {
 		return ap.session2.SecureRequest(method, endpoint, req)
 	})

@@ -5,17 +5,25 @@ import (
 )
 
 type PrivateSubnetsEndpoint struct {
-	service *internal.FormService
+	service *internal.JsonService
 	url     string
 }
 
-func NewPrivateSubnetsEndpoint(service *internal.FormService) *PrivateSubnetsEndpoint {
+func NewPrivateSubnetsEndpoint(service *internal.JsonService) *PrivateSubnetsEndpoint {
 	return &PrivateSubnetsEndpoint{
 		service: service,
 		url:     "/EntityPrivateSubnet",
 	}
 }
 
+type privateSubnetsAllRequest struct {
+	Match struct {} `json:"match"`
+	Offset int `json:"offset"`
+	Order string `json:"order"`
+	OrderBy string `json:"orderBy"`
+	Rows int `json:"rows"`
+	Where []string `json:"where"`
+}
 type privateSubnetsAllResult struct {
 	EntityAllResult
 	Objects []*PrivateSubnet `json:"objects"`
@@ -29,8 +37,15 @@ type PrivateSubnet struct {
 }
 
 func (endpoint *PrivateSubnetsEndpoint) All() ([]*PrivateSubnet, error) {
+	body := &privateSubnetsAllRequest{
+		Offset: 0,
+		Order: "DESC",
+		OrderBy: "id",
+		Rows: 10,
+	}
+	
 	var result privateSubnetsAllResult
-	err := endpoint.service.Post(endpoint.url, nil, &result)
+	err := endpoint.service.Post(endpoint.url, body, &result)
 	if err != nil {
 		return nil, err
 	}
