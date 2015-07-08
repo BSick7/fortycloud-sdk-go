@@ -29,7 +29,7 @@ type ipAddressSetsAllResult struct {
 
 func (endpoint *IpAddressSetsEndpoint) All() ([]IpAddressSet, error) {
 	var result ipAddressSetsAllResult
-	err := endpoint.service.Get(endpoint.url, &result)
+	_, err := endpoint.service.Get(endpoint.url, &result)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +42,7 @@ type ipAddressSetsGetResult struct {
 
 func (endpoint *IpAddressSetsEndpoint) Get(id string) (*IpAddressSet, error) {
 	var result ipAddressSetsGetResult
-	err := endpoint.service.Get(endpoint.url+"/"+id, &result)
+	_, err := endpoint.service.Get(endpoint.url+"/"+id, &result)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +55,7 @@ type ipAddressSetsPostResult struct {
 
 func (endpoint *IpAddressSetsEndpoint) Post(set *IpAddressSet) (*IpAddressSet, error) {
 	var result ipAddressSetsPostResult
-	err := endpoint.service.Post(endpoint.url, set, &result)
+	_, err := endpoint.service.Post(endpoint.url, set, &result)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ type ipAddressSetsPutResult struct {
 
 func (endpoint *IpAddressSetsEndpoint) Put(set *IpAddressSet) (*IpAddressSet, error) {
 	var result ipAddressSetsPutResult
-	err := endpoint.service.Put(endpoint.url, set.Id, set, &result)
+	_, err := endpoint.service.Put(endpoint.url, set.Id, set, &result)
 	if err != nil {
 		return nil, err
 	}
@@ -76,5 +76,6 @@ func (endpoint *IpAddressSetsEndpoint) Put(set *IpAddressSet) (*IpAddressSet, er
 }
 
 func (endpoint *IpAddressSetsEndpoint) Delete(id string) error {
-	return endpoint.service.Delete(endpoint.url, id)
+	_, err := endpoint.service.Delete(endpoint.url, id)
+	return err
 }

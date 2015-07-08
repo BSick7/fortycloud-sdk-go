@@ -33,48 +33,48 @@ func (svc *JsonService) InjectRequest(action RequestSite) {
 	svc.requestSites = append(svc.requestSites, action)
 }
 
-func (svc *JsonService) Get(endpoint string, result interface{}) error {
+func (svc *JsonService) Get(endpoint string, result interface{}) (*http.Response, error) {
 	return svc.do("GET", endpoint, nil, result)
 }
-func (svc *JsonService) Post(endpoint string, body interface{}, result interface{}) error {
+func (svc *JsonService) Post(endpoint string, body interface{}, result interface{}) (*http.Response, error) {
 	json, err := json.Marshal(body)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	return svc.do("POST", endpoint, json, result)
 }
-func (svc *JsonService) Put(endpoint string, id string, body interface{}, result interface{}) error {
+func (svc *JsonService) Put(endpoint string, id string, body interface{}, result interface{}) (*http.Response, error) {
 	json, err := json.Marshal(body)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	return svc.do("PUT", endpoint+"/"+id, json, result)
 }
-func (svc *JsonService) Delete(endpoint string, result interface{}) error {
+func (svc *JsonService) Delete(endpoint string, result interface{}) (*http.Response, error) {
 	return svc.do("DELETE", endpoint, nil, result)
 }
 
-func (svc *JsonService) do(method string, endpoint string, body []byte, result interface{}) error {
+func (svc *JsonService) do(method string, endpoint string, body []byte, result interface{}) (*http.Response, error) {
 	req, err := http.NewRequest(method, svc.url+endpoint, bytes.NewBuffer(body))
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	for _, site := range svc.requestSites {
 		err := site(method, endpoint, req)
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
 
 	log.Println(method, req.URL)
 	res, err := svc.client.Do(req)
 	if err != nil {
-		return err
+		return res, err
 	}
 
 	defer res.Body.Close()
 	resbody, _ := ioutil.ReadAll(res.Body)
 
-	return json.Unmarshal(resbody, result)
+	return res, json.Unmarshal(resbody, result)
 }

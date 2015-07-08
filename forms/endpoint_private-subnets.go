@@ -45,7 +45,7 @@ func (endpoint *PrivateSubnetsEndpoint) All() ([]*PrivateSubnet, error) {
 	}
 	
 	var result privateSubnetsAllResult
-	err := endpoint.service.Post(endpoint.url, body, &result)
+	_, err := endpoint.service.Post(endpoint.url, body, &result)
 	if err != nil {
 		return nil, err
 	}

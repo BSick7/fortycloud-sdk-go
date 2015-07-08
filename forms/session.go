@@ -13,6 +13,7 @@ type Session struct {
 	password          string
 	tenantName        string
 	authenticityToken string
+	csrfToken         string
 	userId            int
 	accountId         int
 }
@@ -37,6 +38,7 @@ func (session *Session) SecureRequest(method string, endpoint string, req *http.
 	if err := session.ensure(); err != nil {
 		return err
 	}
+	req.Header.Set("X-CSRF-Token", session.csrfToken)
 	if session.accountId > -1 {
 		values := req.URL.Query()
 		values.Add("account", strconv.Itoa(session.accountId))
@@ -57,6 +59,7 @@ func (session *Session) ensure() error {
 		return err
 	}
 	session.authenticityToken = result.AuthenticityToken
+	session.csrfToken = result.CsrfToken
 
 	result2, err := session.authenticator.Authenticate(session.username, session.password, session.authenticityToken)
 	if err != nil {

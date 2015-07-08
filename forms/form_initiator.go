@@ -7,6 +7,10 @@ import (
 	"regexp"
 )
 
+const (
+	FortyCloudCsrfTokenKey = "FORTYCLOUD_CSRF_TOKEN"
+)
+
 type FormInitiator struct {
 	url    string
 	client *http.Client
@@ -24,6 +28,7 @@ func NewFormInitiator(url string, client *http.Client) *FormInitiator {
 
 type InitiatorResult struct {
 	AuthenticityToken string
+	CsrfToken string
 }
 
 func (initiator *FormInitiator) Initiate() (*InitiatorResult, error) {
@@ -48,6 +53,7 @@ func (initiator *FormInitiator) Initiate() (*InitiatorResult, error) {
 
 	result := &InitiatorResult{
 		AuthenticityToken: token,
+		CsrfToken: getCsrfToken(res),
 	}
 
 	return result, nil
@@ -68,4 +74,13 @@ func findAuthenticityToken(body string) (string, error) {
 		}
 	}
 	return "", nil
+}
+
+func getCsrfToken(res *http.Response) string {
+	for _,cookie := range res.Cookies() {
+		if (cookie.Name == FortyCloudCsrfTokenKey) {
+			return cookie.Value
+		}
+	}
+	return ""
 }

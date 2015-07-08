@@ -42,7 +42,7 @@ func NewServersEndpoint(service *internal.JsonService) *ServersEndpoint {
 
 func (endpoint *ServersEndpoint) All() ([]Server, error) {
 	var result serversAllResult
-	err := endpoint.service.Get(endpoint.url, &result)
+	_, err := endpoint.service.Get(endpoint.url, &result)
 	if err != nil {
 		return nil, err
 	}

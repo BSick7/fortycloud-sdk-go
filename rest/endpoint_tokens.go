@@ -44,6 +44,6 @@ func (endpoint *TokensEndpoint) Post(username string, password string, tenantNam
 	body.Auth.Credentials.Password = password
 	body.Auth.TenantName = tenantName
 	var result TokensResult
-	err := endpoint.service.Post(endpoint.url, body, &result)
+	_, err := endpoint.service.Post(endpoint.url, body, &result)
 	return &result, err
 }

@@ -26,7 +26,7 @@ type scriptResponse struct {
 
 func (endpoint *ScriptsEndpoint) Get(setting string, isGateway bool) (string, error) {
 	var result scriptResponse
-	err := endpoint.service.Post(endpoint.url, &scriptRequest{
+	_, err := endpoint.service.Post(endpoint.url, &scriptRequest{
 		GlobalSettingName: setting,
 		IsGateway:         isGateway,
 	}, &result)
