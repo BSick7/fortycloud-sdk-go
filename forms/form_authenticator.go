@@ -2,6 +2,7 @@ package forms
 
 import (
 	"bytes"
+	"errors"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -53,8 +54,19 @@ func (authenticator *FormAuthenticator) Authenticate(username string, password s
 
 	defer res.Body.Close()
 	resbody, _ := ioutil.ReadAll(res.Body)
-
-	return findAdminInfo(string(resbody))
+	
+	sbody := string(resbody)
+	
+	result, err2 := findAdminInfo(string(resbody))
+	if err2 != nil {
+		return nil, err2
+	}
+	
+	if result.AccountId > -1 {
+		return result, nil
+	}
+	
+	return nil, findAdminError(sbody)
 }
 
 func findAdminInfo(body string) (*FormAuthenticatorResult, error) {
@@ -79,4 +91,21 @@ func findAdminInfo(body string) (*FormAuthenticatorResult, error) {
 		}
 	}
 	return result, nil
+}
+
+func findAdminError(body string) error {
+	re, err := regexp.Compile(`<h3 class="error">(?P<error>[^<]*)</h3>`)
+	if err != nil {
+		return nil
+	}
+	match := re.FindStringSubmatch(body)
+	if match == nil {
+		return nil
+	}
+	for i, name := range re.SubexpNames() {
+		if name == "error" {
+			return errors.New(match[i])
+		}
+	}
+	return nil
 }
