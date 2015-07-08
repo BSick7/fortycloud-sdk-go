@@ -1,47 +1,29 @@
 package forms
 
 import (
+	"log"
 	"net/http"
 	"strconv"
-	"github.com/mdl/fortycloud-sdk-go/internal"
 )
 
 type Session struct {
-	Cookies *internal.CookieContainer
 	initiator *FormInitiator
-	userpass *UserPassEndpoint
-	admin *FormAdminCollector
+	authenticator *FormAuthenticator
 	username string
 	password string
 	tenantName string
 	authenticityToken string
-	authenticated bool
 	userId int
 	accountId int
 }
 
-func NewSession(url string) *Session {
-	session := new(Session)
-	session.Cookies = new(internal.CookieContainer)
-	session.accountId = -1
-	svc := internal.NewFormService(url, nil)
-	svc.InjectRequest(func(method string, endpoint string, req *http.Request) error {
-		session.Cookies.AddToRequest(req)
-		return nil
-	})
-	svc.InjectRequest(func(method string, endpoint string, req *http.Request) error {
-		if endpoint == "/authenticate/userpass" {
-			req.Header.Set("Referer", url + "/login")
-		}
-		return nil
-	})
-	svc.InjectResponse(func(method string, endpoint string, res *http.Response) error {
-		session.Cookies.Merge(res.Cookies())
-		return nil
-	})
-	session.initiator = NewFormInitiator(url, nil)
-	session.userpass = NewUserPassEndpoint(svc)
-	session.admin = NewFormAdminCollector(url, nil)
+func NewSession(url string, client *http.Client) *Session {
+	session := &Session{
+		userId: -1,
+		accountId: -1,
+	}
+	session.initiator = NewFormInitiator(url, client)
+	session.authenticator = NewFormAuthenticator(url, client)
 	return session
 }
 
@@ -55,7 +37,6 @@ func (session *Session) SecureRequest(method string, endpoint string, req *http.
 	if err := session.ensure(); err != nil {
         return err
     }
-	session.Cookies.AddToRequest(req)
 	if (session.accountId > -1) {
 		values := req.URL.Query()
 		values.Add("account", strconv.Itoa(session.accountId))
@@ -71,29 +52,23 @@ func (session *Session) ensure() error {
 	
 	session.userId = -1
 	session.accountId = -1
-	result, err := session.initiator.Initiate(session.Cookies)
+	result, err := session.initiator.Initiate()
 	if err != nil {
 		return err
 	}
 	session.authenticityToken = result.AuthenticityToken
     
-    err = session.userpass.Post(session.username, session.password, session.tenantName, session.authenticityToken)
+    result2, err := session.authenticator.Authenticate(session.username, session.password, session.authenticityToken)
     if err != nil {
         return err
     }
-	cookie := session.Cookies.Get("FORTYCLOUD_FLASH")
-	session.authenticated = cookie != nil && cookie.Value == "%00requestAfterLogin%3Atrue%00"
-	log.Println("Form Authentication status: ", session.authenticated)
+	session.userId = result2.UserId
+	session.accountId = result2.AccountId
+	log.Println("Form Authentication status: ", result2.AccountId > -1)
 	
-	result3, err := session.admin.Collect(session.Cookies)
-	if err != nil {
-		return err
-	}
-	session.userId = result3.UserId
-	session.accountId = result3.AccountId
     return nil
 }
 
 func (session *Session) isAuthenticated() bool {
-	return session.authenticated
+	return session.userId > -1
 }

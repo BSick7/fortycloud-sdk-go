@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"io/ioutil"
 	"regexp"
-	"github.com/mdl/fortycloud-sdk-go/internal"
 )
 
 type FormInitiator struct {
@@ -27,7 +26,7 @@ type InitiatorResult struct {
 	AuthenticityToken string
 }
 
-func (initiator *FormInitiator) Initiate(cookies *internal.CookieContainer) (*InitiatorResult, error) {
+func (initiator *FormInitiator) Initiate() (*InitiatorResult, error) {
 	req, err := http.NewRequest("GET", initiator.url + "/login", nil)
 	if err != nil {
 		return nil, err
@@ -41,7 +40,6 @@ func (initiator *FormInitiator) Initiate(cookies *internal.CookieContainer) (*In
 	
     defer res.Body.Close()
     resbody, _ := ioutil.ReadAll(res.Body)
-	cookies.Merge(res.Cookies())
 	
 	token, err := findAuthenticityToken(string(resbody))
 	if err != nil {

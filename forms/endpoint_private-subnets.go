@@ -6,7 +6,6 @@ import (
 
 type PrivateSubnetsEndpoint struct {
 	service *internal.FormService
-	container *internal.CookieContainer
 	url string
 }
 

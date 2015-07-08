@@ -2,6 +2,7 @@ package fortycloud
 
 import (
 	"net/http"
+	"net/http/cookiejar"
 	"github.com/mdl/fortycloud-sdk-go/internal"
 	"github.com/mdl/fortycloud-sdk-go/forms"
 	"github.com/mdl/fortycloud-sdk-go/rest"
@@ -38,14 +39,17 @@ func configureRestApi(ap *Api, url string) {
 }
 
 func configureFormsApi(ap *Api, url string) {
-	ap.session2 = forms.NewSession(url)
-	svc := internal.NewFormService(url + "/api", nil)
+	client := createClient()
+	ap.session2 = forms.NewSession(url, client)
+	svc := internal.NewFormService(url + "/api", client)
 	svc.InjectRequest(func(method string, endpoint string, req *http.Request) error {
 		return ap.session2.SecureRequest(method, endpoint, req)
 	})
-	svc.InjectResponse(func(method string, endpoint string, res *http.Response) error {
-		ap.session2.Cookies.Merge(res.Cookies())
-		return nil
-	})
 	ap.PrivateSubnets = forms.NewPrivateSubnetsEndpoint(svc)
+}
+
+func createClient() *http.Client {
+	jar, _ := cookiejar.New(nil)
+	client := &http.Client { Jar: jar }
+	return client
 }
