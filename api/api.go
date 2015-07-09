@@ -8,6 +8,11 @@ import (
 	"net/http/cookiejar"
 )
 
+const (
+	restUrl = "https://api.fortycloud.net/restapi/v0.4"
+	formUrl = "https://www1.fortycloud.net"
+)
+
 type Api struct {
 	session1       *rest.Session
 	session2       *forms.Session
@@ -17,9 +22,9 @@ type Api struct {
 	Connections	   *forms.ConnectionsEndpoint
 }
 
-func NewApi(url string, formUrl string) *Api {
+func NewApi() *Api {
 	ap := new(Api)
-	configureRestApi(ap, url)
+	configureRestApi(ap, restUrl)
 	configureFormsApi(ap, formUrl)
 	return ap
 }
