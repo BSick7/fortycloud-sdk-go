@@ -54,18 +54,18 @@ func (authenticator *FormAuthenticator) Authenticate(username string, password s
 
 	defer res.Body.Close()
 	resbody, _ := ioutil.ReadAll(res.Body)
-	
+
 	sbody := string(resbody)
-	
+
 	result, err2 := findAdminInfo(string(resbody))
 	if err2 != nil {
 		return nil, err2
 	}
-	
+
 	if result.AccountId > -1 {
 		return result, nil
 	}
-	
+
 	aerr := findAdminError(sbody)
 	if aerr != nil {
 		return nil, aerr

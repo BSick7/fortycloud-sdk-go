@@ -29,7 +29,7 @@ func NewFormInitiator(url string, client *http.Client) *FormInitiator {
 
 type InitiatorResult struct {
 	AuthenticityToken string
-	CsrfToken string
+	CsrfToken         string
 }
 
 func (initiator *FormInitiator) Initiate() (*InitiatorResult, error) {
@@ -54,7 +54,7 @@ func (initiator *FormInitiator) Initiate() (*InitiatorResult, error) {
 
 	result := &InitiatorResult{
 		AuthenticityToken: token,
-		CsrfToken: getCsrfToken(res),
+		CsrfToken:         getCsrfToken(res),
 	}
 
 	return result, nil
@@ -83,8 +83,8 @@ func findAuthenticityToken(body string) (string, error) {
 }
 
 func getCsrfToken(res *http.Response) string {
-	for _,cookie := range res.Cookies() {
-		if (cookie.Name == FortyCloudCsrfTokenKey) {
+	for _, cookie := range res.Cookies() {
+		if cookie.Name == FortyCloudCsrfTokenKey {
 			return cookie.Value
 		}
 	}

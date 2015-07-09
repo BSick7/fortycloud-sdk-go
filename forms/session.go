@@ -9,27 +9,27 @@ import (
 )
 
 type Session struct {
-	initiator         	*FormInitiator
-	authenticator     	*FormAuthenticator
-	username          	string
-	password          	string
-	authenticityToken 	string
-	csrfToken         	string
-	userId            	int
-	accountId         	int
-	gate				*sync.Mutex
+	initiator         *FormInitiator
+	authenticator     *FormAuthenticator
+	username          string
+	password          string
+	authenticityToken string
+	csrfToken         string
+	userId            int
+	accountId         int
+	gate              *sync.Mutex
 }
 
 const (
-	retries = 3
+	retries        = 3
 	retrySleepSecs = 2
 )
 
 func NewSession(url string, client *http.Client) *Session {
 	session := &Session{
-		userId:    	-1,
-		accountId: 	-1,
-		gate: 		new(sync.Mutex),
+		userId:    -1,
+		accountId: -1,
+		gate:      new(sync.Mutex),
 	}
 	session.initiator = NewFormInitiator(url, client)
 	session.authenticator = NewFormAuthenticator(url, client)
@@ -61,7 +61,7 @@ func (session *Session) ensure() error {
 	if session.isAuthenticated() {
 		return nil
 	}
-	
+
 	session.userId = -1
 	session.accountId = -1
 	for i := 0; i < retries; i++ {
@@ -75,7 +75,7 @@ func (session *Session) ensure() error {
 		session.initiator.Reset()
 		time.Sleep(retrySleepSecs * time.Second)
 	}
-	
+
 	return errors.New("Could not authenticate.")
 }
 
@@ -90,7 +90,7 @@ func (session *Session) tryAuth() (bool, error) {
 	}
 	session.authenticityToken = iresult.AuthenticityToken
 	session.csrfToken = iresult.CsrfToken
-	
+
 	aresult, err2 := session.authenticator.Authenticate(session.username, session.password, session.authenticityToken)
 	if err2 != nil {
 		return false, err2
