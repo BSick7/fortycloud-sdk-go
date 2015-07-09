@@ -164,7 +164,6 @@ type privateSubnetDeleteResult struct {
 	Result string `json:"result"`
 	Total  int    `json:"total"`
 }
-
 func (endpoint *PrivateSubnetsEndpoint) Delete(id int) error {
 	var result privateSubnetDeleteResult
 	_, err := endpoint.service.Delete(endpoint.url, []int{id}, &result)

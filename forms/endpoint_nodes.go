@@ -1,6 +1,8 @@
 package forms
 
 import (
+	"errors"
+	"fmt"
 	"github.com/mdl/fortycloud-sdk-go/internal"
 )
 
@@ -76,4 +78,20 @@ func (endpoint *NodesEndpoint) GetByPublicIP(publicIP string) (*Node, error) {
 		return nil, nil
 	}
 	return nodes[0], nil
+}
+
+type nodeDeleteResult struct {
+	Result string `json:"result"`
+	Total  int    `json:"total"`
+}
+func (endpoint *NodesEndpoint) Delete(id int) error {
+	var result nodeDeleteResult
+	_, err := endpoint.service.Delete(endpoint.url, []int{id}, &result)
+	if err != nil {
+		return err
+	}
+	if result.Result != "OK" {
+		return errors.New(fmt.Sprintf("Failed node delete: %s", result.Result))
+	}
+	return nil
 }
