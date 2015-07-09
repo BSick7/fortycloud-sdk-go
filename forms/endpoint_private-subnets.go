@@ -21,6 +21,11 @@ type PrivateSubnet struct {
 	Subnet       string `json:"subnet"`
 	NatDisabled  bool   `json:"sNatDisabled"`
 	Version      int    `json:"version"`
+	GatewayId	 int	`json:"gw.id"`
+	Gateway      struct {
+		Id		int 	`json:"id"`
+		Name	string	`json:"name"`
+	} `json:"gw"`
 }
 
 func NewPrivateSubnetsEndpoint(service *internal.JsonService) *PrivateSubnetsEndpoint {
@@ -60,7 +65,16 @@ func (endpoint *PrivateSubnetsEndpoint) All(filters []FilterClause) ([]*PrivateS
 	if err != nil {
 		return nil, err
 	}
-	return result.Objects, nil
+	
+	
+	subnets := result.Objects
+	if subnets != nil {
+		for _, subnet := range subnets {
+			subnet.GatewayId = subnet.Gateway.Id
+		}
+	}
+	
+	return subnets, nil
 }
 
 func (endpoint *PrivateSubnetsEndpoint) Get(id int) (*PrivateSubnet, error) {
@@ -90,6 +104,7 @@ func (endpoint *PrivateSubnetsEndpoint) Create(subnet *PrivateSubnet) (*PrivateS
 		Source:       subnet.Source,
 		Subnet:       subnet.Subnet,
 		NatDisabled:  subnet.NatDisabled,
+		GwId:		  subnet.GatewayId,
 	})
 	if err != nil {
 		return nil, err
@@ -120,6 +135,7 @@ func (endpoint *PrivateSubnetsEndpoint) Update(subnet *PrivateSubnet) (*PrivateS
 		Source:       subnet.Source,
 		Subnet:       subnet.Subnet,
 		NatDisabled:  subnet.NatDisabled,
+		GwId:		  subnet.GatewayId,
 	})
 	if err != nil {
 		return nil, err
@@ -167,7 +183,7 @@ type subnetPostObject struct {
 	Name         string `json:"name"`
 	Description  string `json:"description"`
 	ActualSubnet string `json:"actualSubnet"`
-	GwId         string `json:"gw.id"`
+	GwId         int	`json:"gw.id,omitempty"`
 	Source       string `json:"source"`
 	Subnet       string `json:"subnet"`
 	NatDisabled  bool   `json:"sNatDisabled"`
@@ -194,7 +210,7 @@ type subnetPutObject struct {
 	Name         string `json:"name"`
 	Description  string `json:"description"`
 	ActualSubnet string `json:"actualSubnet"`
-	GwId         string `json:"gw.id"`
+	GwId         int	`json:"gw.id,omitempty"`
 	Source       string `json:"source"`
 	Subnet       string `json:"subnet"`
 	NatDisabled  bool   `json:"sNatDisabled"`

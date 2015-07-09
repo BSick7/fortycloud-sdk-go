@@ -10,14 +10,12 @@ func main() {
 	api.SetApiCredentials("", "", "")
 	api.SetFormsCredentials("", "")
 	
-	nodes, err := api.Nodes.All(nil)
+	node, err := api.Nodes.GetByPublicIP("54.165.11.200")
 	if err != nil {
 		fmt.Println("Error: ", err)
 		return
 	}
-	for _,node := range nodes {
-		fmt.Printf("%+v\n", node)
-	}
+	fmt.Printf("%+v\n", node)
 	
 	/*
     subnets, err := api.PrivateSubnets.All(nil)
