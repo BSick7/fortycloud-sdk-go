@@ -14,12 +14,13 @@ const (
 )
 
 type Api struct {
-	session1       *rest.Session
-	session2       *forms.Session
-	Scripts        *rest.ScriptsEndpoint
-	Servers        *rest.ServersEndpoint
-	PrivateSubnets *forms.PrivateSubnetsEndpoint
-	Connections	   *forms.ConnectionsEndpoint
+	session1       	*rest.Session
+	session2      	*forms.Session
+	Scripts        	*rest.ScriptsEndpoint
+	Servers      	*rest.ServersEndpoint
+	PrivateSubnets	*forms.PrivateSubnetsEndpoint
+	Connections	   	*forms.ConnectionsEndpoint
+	Nodes			*forms.NodesEndpoint
 }
 
 func NewApi() *Api {
@@ -56,6 +57,7 @@ func configureFormsApi(ap *Api, url string) {
 	})
 	ap.PrivateSubnets = forms.NewPrivateSubnetsEndpoint(svc)
 	ap.Connections = forms.NewConnectionsEndpoint(svc)
+	ap.Nodes = forms.NewNodesEndpoint(svc)
 }
 
 func createClient() *http.Client {
