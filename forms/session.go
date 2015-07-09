@@ -4,23 +4,26 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
+	"sync"
 )
 
 type Session struct {
-	initiator         *FormInitiator
-	authenticator     *FormAuthenticator
-	username          string
-	password          string
-	authenticityToken string
-	csrfToken         string
-	userId            int
-	accountId         int
+	initiator         	*FormInitiator
+	authenticator     	*FormAuthenticator
+	username          	string
+	password          	string
+	authenticityToken 	string
+	csrfToken         	string
+	userId            	int
+	accountId         	int
+	gate				*sync.Mutex
 }
 
 func NewSession(url string, client *http.Client) *Session {
 	session := &Session{
-		userId:    -1,
-		accountId: -1,
+		userId:    	-1,
+		accountId: 	-1,
+		gate: 		new(sync.Mutex),
 	}
 	session.initiator = NewFormInitiator(url, client)
 	session.authenticator = NewFormAuthenticator(url, client)
@@ -33,7 +36,10 @@ func (session *Session) Set(username string, password string) {
 }
 
 func (session *Session) SecureRequest(method string, endpoint string, req *http.Request) error {
-	if err := session.ensure(); err != nil {
+	session.gate.Lock()
+	err := session.ensure()
+	session.gate.Unlock()
+	if err != nil {
 		return err
 	}
 	req.Header.Set("X-CSRF-Token", session.csrfToken)
