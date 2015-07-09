@@ -70,7 +70,8 @@ func (authenticator *FormAuthenticator) Authenticate(username string, password s
 	if aerr != nil {
 		return nil, aerr
 	}
-	return nil, errors.New("Bad authentication response.")
+	log.Printf("Unexpected response: %s\n", sbody)
+	return result, nil
 }
 
 func findAdminInfo(body string) (*FormAuthenticatorResult, error) {

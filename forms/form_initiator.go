@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/http/cookiejar"
 	"regexp"
 )
 
@@ -57,6 +58,11 @@ func (initiator *FormInitiator) Initiate() (*InitiatorResult, error) {
 	}
 
 	return result, nil
+}
+
+func (initiator *FormInitiator) Reset() {
+	jar, _ := cookiejar.New(nil)
+	initiator.client.Jar = jar
 }
 
 func findAuthenticityToken(body string) (string, error) {
