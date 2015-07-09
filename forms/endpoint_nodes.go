@@ -80,12 +80,12 @@ func (endpoint *NodesEndpoint) GetByPublicIP(publicIP string) (*Node, error) {
 	return nodes[0], nil
 }
 
-type nodeDeleteResult struct {
+type nodesDeleteResult struct {
 	Result string `json:"result"`
 	Total  int    `json:"total"`
 }
 func (endpoint *NodesEndpoint) Delete(id int) error {
-	var result nodeDeleteResult
+	var result nodesDeleteResult
 	_, err := endpoint.service.Delete(endpoint.url, []int{id}, &result)
 	if err != nil {
 		return err
