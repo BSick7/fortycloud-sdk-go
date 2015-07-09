@@ -107,9 +107,32 @@ func (endpoint *ConnectionsEndpoint) Create(connection *Connection) (*Connection
 		return nil, err
 	}
 	
-	//endpoint.All()
+	conns, err2 := endpoint.All(connection.PeerA.Id, connection.PeerB.Id, nil)
+	if err2 != nil {
+		return nil, err2
+	}
 	
-	return nil, nil
+	if len(conns) <= 0 {
+		return nil, errors.New("Could not get created connection.")
+	}
+	
+	return conns[0], nil
+}
+
+type connectionDeleteResult struct {
+	Result string `json:"result"`
+	Total int `json:"total"`
+}
+func (endpoint *ConnectionsEndpoint) Delete(id int) error {
+	var result connectionDeleteResult
+	_, err := endpoint.service.Delete(endpoint.url, []int{id}, &result)
+	if err != nil {
+		return err
+	}
+	if result.Result != "OK" {
+		return errors.New(fmt.Sprintf("Failed connection delete: %s", result.Result))
+	}
+	return nil
 }
 
 type connectionsEndpointPutRequest struct {
