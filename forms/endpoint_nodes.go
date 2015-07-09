@@ -64,3 +64,16 @@ func (endpoint *NodesEndpoint) All(filters []FilterClause) ([]*Node, error) {
 	}
 	return result.Objects, nil
 }
+
+func (endpoint *NodesEndpoint) GetByPublicIP(publicIP string) (*Node, error) {
+	nodes, err := endpoint.All([]FilterClause{
+		NewFilterLike("public_ip", publicIP),
+	})
+	if err != nil {
+		return nil, err
+	}
+	if len(nodes) <= 0 {
+		return nil, nil
+	}
+	return nodes[0], nil
+}
