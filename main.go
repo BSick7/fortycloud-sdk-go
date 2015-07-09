@@ -6,10 +6,20 @@ import (
 )
 
 func main() {
-    api := fortycloud.NewApi("https://api.fortycloud.net/restapi/v0.4", "https://www1.fortycloud.net")
+    api := fortycloud.NewApi()
 	api.SetApiCredentials("", "", "")
 	api.SetFormsCredentials("", "")
 	
+	nodes, err := api.Nodes.All(nil)
+	if err != nil {
+		fmt.Println("Error: ", err)
+		return
+	}
+	for _,node := range nodes {
+		fmt.Printf("%+v\n", node)
+	}
+	
+	/*
     subnets, err := api.PrivateSubnets.All(nil)
     if err != nil {
         fmt.Println("Error: ", err)
@@ -27,6 +37,23 @@ func main() {
 	for _,conn := range conns {
 		fmt.Printf("%+v\n", conn)
 	}
+	*/
+	
+	/*
+	conn, err := api.Connections.Get(468)
+	if err != nil {
+		fmt.Println("Error: ", err)
+		return
+	}
+	
+	conn.Name = "ip-10-2-21-176<--->ip-10-1-11-23"
+	
+	_, err2 := api.Connections.Update(conn)
+	if err2 != nil {
+		fmt.Println("Error: ", err2)
+		return
+	}
+	*/
     
     /*
     servers, err := api.Servers.All()
