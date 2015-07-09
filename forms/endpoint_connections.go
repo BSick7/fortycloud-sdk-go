@@ -3,6 +3,7 @@ package forms
 import (
 	"errors"
 	"fmt"
+	"strconv"
 	"github.com/mdl/fortycloud-sdk-go/internal"
 )
 
@@ -98,6 +99,25 @@ func (endpoint *ConnectionsEndpoint) All(peerAId int, peerBId int, filters []Fil
 	return result.Objects, nil
 }
 
+func (endpoint *ConnectionsEndpoint) Get(id int) (*Connection, error) {
+	conns, err := endpoint.All(0, 0, nil)
+	if err != nil {
+		return nil, err
+	}
+	
+	if len(conns) <= 0 {
+		return nil, nil
+	}
+	
+	for _,conn := range conns {
+		if conn.Id == id {
+			return conn, nil
+		}
+	}
+	
+	return nil, nil
+}
+
 func (endpoint *ConnectionsEndpoint) Create(connection *Connection) (*Connection, error) {
 	err := endpoint.put(&connectionsEndpointPutRequest{
 		PeerAId: connection.PeerA.Id,
@@ -117,6 +137,40 @@ func (endpoint *ConnectionsEndpoint) Create(connection *Connection) (*Connection
 	}
 	
 	return conns[0], nil
+}
+
+func (endpoint *ConnectionsEndpoint) Update(connection *Connection) (*Connection, error) {
+	err := endpoint.post(&connectionsEndpointPostRequest {
+		Type: "EntityConnection",
+		Id: connection.Id,
+		PeerAId: connection.PeerA.Id,
+		PeerBId: connection.PeerB.Id,
+		Name: connection.Name,
+		PeerANetwork: connection.PeerANetwork,
+		PeerBNetwork: connection.PeerBNetwork,
+		Pfs: connection.Pfs,
+		KeyLifetime: connection.KeyLifetime,
+		Active: connection.Active,
+		ForceNATT: connection.ForceNATT,
+		DpdTimeout: connection.DpdTimeout,
+	})
+	if err != nil {
+		return nil, err
+	}
+	
+	matches, err := endpoint.All(connection.PeerA.Id, connection.PeerB.Id, nil)
+	if err != nil {
+		return nil, err
+	}
+	if len(matches) <= 0 {
+		return nil, errors.New("Could not get updated connection.")
+	}
+	for _,match := range matches {
+		if match.Id == connection.Id {
+			return match, nil
+		}
+	}
+	return nil, errors.New("Could not find updated connection.")
 }
 
 type connectionDeleteResult struct {
@@ -151,6 +205,40 @@ func (endpoint *ConnectionsEndpoint) put(connection *connectionsEndpointPutReque
 	}
 	if result.Result != "OK" {
 		return errors.New(fmt.Sprintf("Failed connections put: %s", result.Result))
+	}
+	return nil
+}
+
+type connectionsEndpointPostRequest struct {
+	Type string `json:"_type"`
+	Active bool `json:"active"`
+	ConnectionState string `json:"connectionState"`
+	DpdTimeout int `json:"dpdtimeout"`
+	ForceNATT bool `json:"forceNATT"`
+	Id int `json:"id"`
+	KeyLifetime string `json:"keyLifetime"`
+	Name string `json:"name"`
+	PeerAId int `json:"peerA.id"`
+	PeerAIP string `json:"peerAIP"`
+	PeerANetwork string `json:"peerAnetwork"`
+	PeerBId int `json:"peerB.id"`
+	PeerBIP string `json:"peerBIP"`
+	PeerBNetwork string `json:"peerBnetwork"`
+	Pfs bool `json:"pfs"`
+	Phase2Lifetime string `json:"phase2Lifetime"`
+}
+type connectionsEndpointPostResult struct {
+	Result string `json:"result"`
+	Total int `json:"total"`
+}
+func (endpoint *ConnectionsEndpoint) post(connection *connectionsEndpointPostRequest) error {
+	var result connectionsEndpointPostResult
+	_, err := endpoint.service.Post(endpoint.url+"/"+strconv.Itoa(connection.Id), connection, &result)
+	if err != nil {
+		return err
+	}
+	if result.Result != "OK" {
+		return errors.New(fmt.Sprintf("Failed connections post: %s", result.Result))
 	}
 	return nil
 }
