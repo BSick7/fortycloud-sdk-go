@@ -62,6 +62,25 @@ func (endpoint *PrivateSubnetsEndpoint) All(filters []FilterClause) ([]*PrivateS
 	return result.Objects, nil
 }
 
+func (endpoint *PrivateSubnetsEndpoint) Get(id int) (*PrivateSubnet, error) {
+	subnets, err := endpoint.All(nil)
+	if err != nil {
+		return nil, err
+	}
+	
+	if len(subnets) <= 0 {
+		return nil, nil
+	}
+	
+	for _,subnet := range subnets {
+		if subnet.Id == id {
+			return subnet, nil
+		}
+	}
+	
+	return nil, nil
+}
+
 func (endpoint *PrivateSubnetsEndpoint) Create(subnet *PrivateSubnet) (*PrivateSubnet, error) {
 	err := endpoint.put(&subnetPutObject {
 		Name: subnet.Name,
