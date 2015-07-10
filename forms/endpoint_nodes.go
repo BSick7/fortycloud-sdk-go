@@ -2,7 +2,6 @@ package forms
 
 import (
 	"errors"
-	"fmt"
 	"github.com/mdl/fortycloud-sdk-go/internal"
 )
 
@@ -84,6 +83,7 @@ type nodesDeleteResult struct {
 	Result string `json:"result"`
 	Total  int    `json:"total"`
 }
+
 func (endpoint *NodesEndpoint) Delete(id int) error {
 	var result nodesDeleteResult
 	_, err := endpoint.service.Delete(endpoint.url, []int{id}, &result)
@@ -91,7 +91,7 @@ func (endpoint *NodesEndpoint) Delete(id int) error {
 		return err
 	}
 	if result.Result != "OK" {
-		return errors.New(fmt.Sprintf("Failed node delete: %s", result.Result))
+		return errors.New(result.Result)
 	}
 	return nil
 }
