@@ -21,10 +21,10 @@ type PrivateSubnet struct {
 	Subnet       string `json:"subnet"`
 	NatDisabled  bool   `json:"sNatDisabled"`
 	Version      int    `json:"version"`
-	GatewayId	 int	`json:"gw.id"`
+	GatewayId    int    `json:"gw.id"`
 	Gateway      struct {
-		Id		int 	`json:"id"`
-		Name	string	`json:"name"`
+		Id   int    `json:"id"`
+		Name string `json:"name"`
 	} `json:"gw"`
 }
 
@@ -65,15 +65,14 @@ func (endpoint *PrivateSubnetsEndpoint) All(filters []FilterClause) ([]*PrivateS
 	if err != nil {
 		return nil, err
 	}
-	
-	
+
 	subnets := result.Objects
 	if subnets != nil {
 		for _, subnet := range subnets {
 			subnet.GatewayId = subnet.Gateway.Id
 		}
 	}
-	
+
 	return subnets, nil
 }
 
@@ -104,7 +103,7 @@ func (endpoint *PrivateSubnetsEndpoint) Create(subnet *PrivateSubnet) (*PrivateS
 		Source:       subnet.Source,
 		Subnet:       subnet.Subnet,
 		NatDisabled:  subnet.NatDisabled,
-		GwId:		  subnet.GatewayId,
+		GwId:         subnet.GatewayId,
 	})
 	if err != nil {
 		return nil, err
@@ -135,7 +134,7 @@ func (endpoint *PrivateSubnetsEndpoint) Update(subnet *PrivateSubnet) (*PrivateS
 		Source:       subnet.Source,
 		Subnet:       subnet.Subnet,
 		NatDisabled:  subnet.NatDisabled,
-		GwId:		  subnet.GatewayId,
+		GwId:         subnet.GatewayId,
 	})
 	if err != nil {
 		return nil, err
@@ -164,6 +163,7 @@ type privateSubnetDeleteResult struct {
 	Result string `json:"result"`
 	Total  int    `json:"total"`
 }
+
 func (endpoint *PrivateSubnetsEndpoint) Delete(id int) error {
 	var result privateSubnetDeleteResult
 	_, err := endpoint.service.Delete(endpoint.url, []int{id}, &result)
@@ -182,7 +182,7 @@ type subnetPostObject struct {
 	Name         string `json:"name"`
 	Description  string `json:"description"`
 	ActualSubnet string `json:"actualSubnet"`
-	GwId         int	`json:"gw.id,omitempty"`
+	GwId         int    `json:"gw.id,omitempty"`
 	Source       string `json:"source"`
 	Subnet       string `json:"subnet"`
 	NatDisabled  bool   `json:"sNatDisabled"`
@@ -209,7 +209,7 @@ type subnetPutObject struct {
 	Name         string `json:"name"`
 	Description  string `json:"description"`
 	ActualSubnet string `json:"actualSubnet"`
-	GwId         int	`json:"gw.id,omitempty"`
+	GwId         int    `json:"gw.id,omitempty"`
 	Source       string `json:"source"`
 	Subnet       string `json:"subnet"`
 	NatDisabled  bool   `json:"sNatDisabled"`
