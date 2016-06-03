@@ -2,7 +2,7 @@ package api
 
 import (
 	"fmt"
-	"github.com/bsick7/fortycloud-sdk-go/internal"
+	"github.com/BSick7/fortycloud-sdk-go/internal"
 	"net/http"
 	"time"
 )
