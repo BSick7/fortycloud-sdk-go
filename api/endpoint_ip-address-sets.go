@@ -2,7 +2,7 @@ package api
 
 import (
 	"fmt"
-	"github.com/mdl/fortycloud-sdk-go/internal"
+	"github.com/bsick7/fortycloud-sdk-go/internal"
 )
 
 type IpAddressSetsEndpoint struct {

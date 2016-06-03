@@ -1,7 +1,7 @@
 package api
 
 import (
-	"github.com/mdl/fortycloud-sdk-go/internal"
+	"github.com/bsick7/fortycloud-sdk-go/internal"
 	"net/http"
 )
 

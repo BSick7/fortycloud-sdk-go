@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/mdl/fortycloud-sdk-go/api"
+	"github.com/bsick7/fortycloud-sdk-go/api"
 )
 
 func main() {
