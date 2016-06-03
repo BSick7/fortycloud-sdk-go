@@ -3,6 +3,7 @@ package internal
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -12,6 +13,16 @@ type JsonService struct {
 	url          string
 	client       *http.Client
 	requestSites []RequestSite
+}
+
+type ResponseError struct {
+	Code   int
+	Status string
+	Body   string
+}
+
+func (e *ResponseError) Error() string {
+	return fmt.Sprintf("[%d] (%s) %s", e.Code, e.Status, e.Body)
 }
 
 func NewJsonService(url string, client *http.Client) *JsonService {
@@ -50,7 +61,7 @@ func (svc *JsonService) Put(endpoint string, id string, body interface{}, result
 	}
 	url := endpoint
 	if len(id) > 0 {
-		url = url+"/"+id
+		url = url + "/" + id
 	}
 	return svc.do("PUT", url, json, result)
 }
@@ -86,6 +97,15 @@ func (svc *JsonService) do(method string, endpoint string, body []byte, result i
 
 	defer res.Body.Close()
 	resbody, _ := ioutil.ReadAll(res.Body)
-
-	return res, json.Unmarshal(resbody, result)
+	if res.StatusCode < 200 || res.StatusCode >= 300 {
+		return res, &ResponseError{
+			Code:   res.StatusCode,
+			Status: res.Status,
+			Body:   string(resbody),
+		}
+	}
+	if len(resbody) > 0 {
+		return res, json.Unmarshal(resbody, result)
+	}
+	return res, nil
 }

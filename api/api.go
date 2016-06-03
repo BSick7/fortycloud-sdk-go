@@ -1,67 +1,41 @@
-package fortycloud
+package api
 
 import (
-	"github.com/mdl/fortycloud-sdk-go/forms"
 	"github.com/mdl/fortycloud-sdk-go/internal"
-	"github.com/mdl/fortycloud-sdk-go/rest"
 	"net/http"
-	"net/http/cookiejar"
-)
-
-const (
-	restUrl = "https://api.fortycloud.net/restapi/v0.4"
-	formUrl = "https://www1.fortycloud.net"
 )
 
 type Api struct {
-	session1       	*rest.Session
-	session2      	*forms.Session
-	Scripts        	*rest.ScriptsEndpoint
-	Servers      	*rest.ServersEndpoint
-	PrivateSubnets	*forms.PrivateSubnetsEndpoint
-	Connections	   	*forms.ConnectionsEndpoint
-	Nodes			*forms.NodesEndpoint
+	session          *Session
+	Gateways         *GatewaysEndpoint
+	IPAddressSets    *IpAddressSetsEndpoint
+	IPSecConnections *IPSecConnectionsEndpoint
+	Subnets          *SubnetsEndpoint
 }
 
-func NewApi() *Api {
-	ap := new(Api)
-	configureRestApi(ap, restUrl)
-	configureFormsApi(ap, formUrl)
+func NewApi(config *ApiConfig) *Api {
+	if config == nil {
+		config = DefaultApiConfig()
+	}
+	ap := &Api{
+		session: DefaultSession(),
+	}
+	ap.SetAccessCredentials(config.AccessKey, config.SecretKey)
+	ap.SetURL(config.URL)
 	return ap
 }
 
-func (ap *Api) SetApiCredentials(username string, password string, tenantName string) {
-	ap.session1.Set(username, password, tenantName)
+func (ap *Api) SetAccessCredentials(key string, secret string) {
+	ap.session.Set(key, secret)
 }
 
-func (ap *Api) SetFormsCredentials(username string, password string) {
-	ap.session2.Set(username, password)
-}
-
-func configureRestApi(ap *Api, url string) {
-	ap.session1 = rest.NewSession(url)
+func (ap *Api) SetURL(url string) {
 	svc := internal.NewJsonService(url, nil)
 	svc.InjectRequest(func(method string, endpoint string, req *http.Request) error {
-		return ap.session1.SecureRequest(method, endpoint, req)
+		return ap.session.SignRequest(req)
 	})
-	ap.Scripts = rest.NewScriptsEndpoint(svc)
-	ap.Servers = rest.NewServersEndpoint(svc)
-}
-
-func configureFormsApi(ap *Api, url string) {
-	client := createClient()
-	ap.session2 = forms.NewSession(url, client)
-	svc := internal.NewJsonService(url+"/api", client)
-	svc.InjectRequest(func(method string, endpoint string, req *http.Request) error {
-		return ap.session2.SecureRequest(method, endpoint, req)
-	})
-	ap.PrivateSubnets = forms.NewPrivateSubnetsEndpoint(svc)
-	ap.Connections = forms.NewConnectionsEndpoint(svc)
-	ap.Nodes = forms.NewNodesEndpoint(svc)
-}
-
-func createClient() *http.Client {
-	jar, _ := cookiejar.New(nil)
-	client := &http.Client{Jar: jar}
-	return client
+	ap.Gateways = NewGatewaysEndpoint(svc)
+	ap.IPAddressSets = NewIpAddressSetsEndpoint(svc)
+	ap.IPSecConnections = NewIPSecConnectionsEndpoint(svc)
+	ap.Subnets = NewSubnetsEndpoint(svc)
 }
