@@ -7,6 +7,7 @@ import (
 
 type Api struct {
 	session          *Session
+	findTimeout      string
 	Gateways         *GatewaysEndpoint
 	IPAddressSets    *IpAddressSetsEndpoint
 	IPSecConnections *IPSecConnectionsEndpoint
@@ -22,6 +23,7 @@ func NewApi(config *ApiConfig) *Api {
 	}
 	ap.SetAccessCredentials(config.AccessKey, config.SecretKey)
 	ap.SetURL(config.URL)
+	ap.SetFindGatewayTimeout(config.FindGatewayTimeout)
 	return ap
 }
 
@@ -38,4 +40,8 @@ func (ap *Api) SetURL(url string) {
 	ap.IPAddressSets = NewIpAddressSetsEndpoint(svc)
 	ap.IPSecConnections = NewIPSecConnectionsEndpoint(svc)
 	ap.Subnets = NewSubnetsEndpoint(svc)
+}
+
+func (ap *Api) SetFindGatewayTimeout(timeout string) {
+	ap.findTimeout = timeout
 }
