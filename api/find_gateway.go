@@ -14,7 +14,7 @@ func (err MissingGatewayError) Error() string {
 	return fmt.Sprintf("could not find gateway with Public IP=%s.", err.PublicIP)
 }
 
-func (ap *Api) FindGatewayByPublicIP(public_ip string) (*Gateway, error) {
+func (ap *Api) FindGatewayByPublicIP(public_ip string, wait bool) (*Gateway, error) {
 	findFunc := func() (*Gateway, error) {
 		gws, err := ap.Gateways.All()
 		if err != nil {
@@ -43,6 +43,9 @@ func (ap *Api) FindGatewayByPublicIP(public_ip string) (*Gateway, error) {
 		}
 		if gw != nil {
 			return gw, nil
+		}
+		if !wait {
+			return nil, nil
 		}
 		if time.Since(start) > timeout {
 			return nil, MissingGatewayError{PublicIP: public_ip}
