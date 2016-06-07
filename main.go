@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/BSick7/fortycloud-sdk-go/api"
+	"os"
 )
 
 func main() {
@@ -11,61 +12,30 @@ func main() {
 	conf.SecretKey = ""
 	conn := api.NewApi(conf)
 
-	/*
-		gateways, err := conn.Gateways.All()
-		if err != nil {
-			fmt.Println("Error: ", err)
-			return
-		}
-
-		for _, gw := range gateways {
-			fmt.Printf("%+v\n", gw)
-		}
-	*/
-
-	ns, err2 := conn.Subnets.Create(&api.Subnet{
-		Name: "Test Subnet 1",
-		Cidr: "10.5.0.0/16",
-	})
-	if err2 != nil {
-		fmt.Println("Error: ", err2)
-		return
+	gw, err := conn.FindGatewayByPublicIP("52.203.17.110")
+	if err != nil {
+		fmt.Printf("error finding gateway: %s", err)
+		os.Exit(1)
 	}
 
-	fmt.Printf("%+v\n", *ns)
+	gw, err = conn.Gateways.Get(gw.Id)
+	if err != nil {
+		fmt.Printf("error getting gateway: %s", err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("%+v", gw)
 
 	/*
-		conn, err := api.Connections.Get(468)
-		if err != nil {
-			fmt.Println("Error: ", err)
-			return
-		}
-
-		conn.Name = "ip-10-2-21-176<--->ip-10-1-11-23"
-
-		_, err2 := api.Connections.Update(conn)
+		ns, err2 := conn.Subnets.Create(&api.Subnet{
+			Name: "Test Subnet 1",
+			Cidr: "10.5.0.0/16",
+		})
 		if err2 != nil {
 			fmt.Println("Error: ", err2)
 			return
 		}
-	*/
 
-	/*
-		servers, err := api.Servers.All()
-		if err != nil {
-			fmt.Println("Error: ", err)
-			return
-		}
-		fmt.Printf("%+v", servers)
-		fmt.Println("")
-
-
-		script, err := api.Scripts.Get("Default Global Settings", true)
-		if err != nil {
-			fmt.Println("Error: ", err)
-			return
-		}
-		fmt.Printf("%+v\n", script)
-		fmt.Println("")
+		fmt.Printf("%+v\n", *ns)
 	*/
 }
