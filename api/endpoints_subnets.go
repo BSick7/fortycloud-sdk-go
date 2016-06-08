@@ -81,6 +81,9 @@ func (endpoint *SubnetsEndpoint) Get(id string) (*Subnet, error) {
 	var res result
 	_, err := endpoint.service.Get(fmt.Sprintf("%s/%s", endpoint.url, id), &res)
 	if err != nil {
+		if IsErrorObjectNotExists(err) {
+			return nil, nil
+		}
 		return nil, err
 	}
 	return &res.Subnet, nil
