@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"github.com/BSick7/fortycloud-sdk-go/internal"
+	"strings"
 )
 
 type Subnet struct {
@@ -13,6 +14,40 @@ type Subnet struct {
 	DisableAutoNAT   bool   `json:"disableAutoNAT"`
 	GatewayRef       string `json:"gatewayRef,omitempty"`
 	ResourceGroupRef string `json:"resourceGroupRef,omitempty"`
+}
+
+func (s *Subnet) GatewayID() string {
+	// expected GatewayRef format: https://api.fortycloud.net/restapi/v0.4/gateways/4013
+	tokens := strings.Split(s.GatewayRef, "/")
+	if len(tokens) < 2 || tokens[len(tokens)-2] != "gateways" {
+		return ""
+	}
+	return tokens[len(tokens)-1]
+}
+
+func (s *Subnet) SetGatewayID(id string) {
+	if id == "" {
+		s.GatewayRef = ""
+		return
+	}
+	s.GatewayRef = fmt.Sprintf("https://api.fortycloud.net/restapi/v0.4/gateways/%s", id)
+}
+
+func (s *Subnet) ResourceGroupID() string {
+	// expected ResourceGroupRef format: https://api.fortycloud.net/restapi/v0.4/resource-groups/2069
+	tokens := strings.Split(s.ResourceGroupRef, "/")
+	if len(tokens) < 2 || tokens[len(tokens)-2] != "resource-groups" {
+		return ""
+	}
+	return tokens[len(tokens)-1]
+}
+
+func (s *Subnet) SetResourceGroupID(id string) {
+	if id == "" {
+		s.ResourceGroupRef = ""
+		return
+	}
+	s.ResourceGroupRef = fmt.Sprintf("https://api.fortycloud.net/restapi/v0.4/resource-groups/%s", id)
 }
 
 type SubnetsEndpoint struct {
@@ -52,6 +87,11 @@ func (endpoint *SubnetsEndpoint) Get(id string) (*Subnet, error) {
 }
 
 func (endpoint *SubnetsEndpoint) Create(subnet *Subnet) (*Subnet, error) {
+	copy := *subnet
+	// These fields can't be included in the request body
+	copy.GatewayRef = ""
+	copy.ResourceGroupRef = ""
+
 	type body struct {
 		Subnet Subnet `json:"subnet"`
 	}
@@ -67,6 +107,11 @@ func (endpoint *SubnetsEndpoint) Create(subnet *Subnet) (*Subnet, error) {
 }
 
 func (endpoint *SubnetsEndpoint) Update(id string, subnet *Subnet) (*Subnet, error) {
+	copy := *subnet
+	// These fields can't be included in the request body
+	copy.GatewayRef = ""
+	copy.ResourceGroupRef = ""
+
 	type body struct {
 		Subnet Subnet `json:"subnet"`
 	}
