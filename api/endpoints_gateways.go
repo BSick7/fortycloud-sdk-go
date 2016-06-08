@@ -59,6 +59,9 @@ func (endpoint *GatewaysEndpoint) Get(id string) (*Gateway, error) {
 	var res result
 	_, err := endpoint.service.Get(fmt.Sprintf("%s/%s", endpoint.url, id), &res)
 	if err != nil {
+		if IsErrorObjectNotExists(err) {
+			return nil, nil
+		}
 		return nil, err
 	}
 	return &res.Gateway, nil
