@@ -12,11 +12,9 @@ type Gateway struct {
 	VpnUsersSubnet       string `json:"vpnUsersSubnet"`
 	Region               string `json:"region"`
 	Enable               bool   `json:"enable"`
-	Release              string `json:"release"`
 	AllowSSHToEveryone   bool   `json:"allowSSHToEveryone  "`
 	RouteAllTrafficViaGW bool   `json:"routeAllTrafficViaGW"`
 	PrivateIP            string `json:"privateIP"`
-	IdentityServerName   string `json:"identityServerName"`
 	State                string `json:"state"`
 	Name                 string `json:"name"`
 	Description          string `json:"description"`
@@ -26,6 +24,8 @@ type Gateway struct {
 	DirectRoutesOnly     bool   `json:"directRoutesOnly"`
 	HaState              string `json:"haState"`
 	Id                   string `json:"id,omitempty"`
+	Release              string `json:"release,omitempty"`
+	IdentityServerName   string `json:"identityServerName,omitempty"`
 }
 
 type GatewaysEndpoint struct {
@@ -97,6 +97,11 @@ func (endpoint *GatewaysEndpoint) GetRegistrationToken(platform string, license 
 }
 
 func (endpoint *GatewaysEndpoint) Update(id string, gateway *Gateway) (*Gateway, error) {
+	copy := *gateway
+	// These fields can't be included in the request body
+	copy.IdentityServerName = ""
+	copy.Release = ""
+
 	type body struct {
 		Gateway Gateway `json:"gateway"`
 	}
@@ -104,7 +109,7 @@ func (endpoint *GatewaysEndpoint) Update(id string, gateway *Gateway) (*Gateway,
 		Gateway Gateway `json:"gateway"`
 	}
 	var res result
-	_, err := endpoint.service.Put(endpoint.url, id, &body{Gateway: *gateway}, &res)
+	_, err := endpoint.service.Put(endpoint.url, id, &body{Gateway: copy}, &res)
 	if err != nil {
 		return nil, err
 	}
