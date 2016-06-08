@@ -17,12 +17,18 @@ type Subnet struct {
 }
 
 func (s *Subnet) GatewayID() string {
-	// expected GatewayRef format: https://api.fortycloud.net/restapi/v0.4/gateways/4013
+	// expected GatewayRef formats:
+	//   - https://api.fortycloud.net/restapi/v0.4/gateways/4013
+	//   - https://api.fortycloud.net/servers/46859
 	tokens := strings.Split(s.GatewayRef, "/")
-	if len(tokens) < 2 || tokens[len(tokens)-2] != "gateways" {
+	if len(tokens) < 2 {
 		return ""
 	}
-	return tokens[len(tokens)-1]
+	prevToken := tokens[len(tokens)-2]
+	if prevToken == "gateways" || prevToken == "servers" {
+		return tokens[len(tokens) - 1]
+	}
+	return ""
 }
 
 func (s *Subnet) SetGatewayID(id string) {

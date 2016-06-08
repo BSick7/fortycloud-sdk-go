@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/BSick7/fortycloud-sdk-go/api"
 	"os"
+	"log"
 )
 
 func main() {
@@ -25,6 +26,9 @@ func main() {
 	}
 
 	fmt.Printf("%+v", gw)
+
+	subnet, err := conn.FindSubnet("172.31.255.0/28", "46859")
+	log.Printf("%+v\n", subnet)
 
 	/*
 		ns, err2 := conn.Subnets.Create(&api.Subnet{
