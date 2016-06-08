@@ -137,6 +137,9 @@ func (endpoint *SubnetsEndpoint) Delete(id string) error {
 }
 
 func (endpoint *SubnetsEndpoint) AssignGateway(subnetId string, gatewayId string) (*Subnet, error) {
+	if gatewayId == "" {
+		return nil, nil
+	}
 	type result struct {
 		Subnet Subnet `json:"subnet"`
 	}
@@ -149,6 +152,9 @@ func (endpoint *SubnetsEndpoint) AssignGateway(subnetId string, gatewayId string
 }
 
 func (endpoint *SubnetsEndpoint) AssignResourceGroup(subnetId string, resourceGroupId string) (*Subnet, error) {
+	if resourceGroupId == "" {
+		return nil, nil
+	}
 	type result struct {
 		Subnet Subnet `json:"subnet"`
 	}
