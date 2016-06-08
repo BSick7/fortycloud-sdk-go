@@ -12,7 +12,7 @@ func main() {
 	conf.SecretKey = ""
 	conn := api.NewApi(conf)
 
-	gw, err := conn.FindGatewayByPublicIP("52.203.17.110")
+	gw, err := conn.FindGatewayByPublicIP("52.203.226.234", false)
 	if err != nil {
 		fmt.Printf("error finding gateway: %s", err)
 		os.Exit(1)
