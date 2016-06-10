@@ -6,26 +6,27 @@ import (
 )
 
 type Gateway struct {
-	Fqdn                 string `json:"fqdn"`
-	PublicIP             string `json:"publicIP"`
-	OverlayAddress       string `json:"overlayAddress"`
-	VpnUsersSubnet       string `json:"vpnUsersSubnet"`
-	Region               string `json:"region"`
-	Enable               bool   `json:"enable"`
-	AllowSSHToEveryone   bool   `json:"allowSSHToEveryone  "`
-	RouteAllTrafficViaGW bool   `json:"routeAllTrafficViaGW"`
-	PrivateIP            string `json:"privateIP"`
-	State                string `json:"state"`
-	Name                 string `json:"name"`
-	Description          string `json:"description"`
-	SecurityGroup        string `json:"securityGroup"`
-	OpenVPNProtocol      string `json:"openVPNProtocol"`
-	GatewayAsDNS         bool   `json:"gatewayAsDNS"`
-	DirectRoutesOnly     bool   `json:"directRoutesOnly"`
-	HaState              string `json:"haState"`
-	Id                   string `json:"id,omitempty"`
-	Release              string `json:"release,omitempty"`
-	IdentityServerName   string `json:"identityServerName,omitempty"`
+	Fqdn                 string   `json:"fqdn"`
+	PublicIP             string   `json:"publicIP"`
+	OverlayAddress       string   `json:"overlayAddress"`
+	VpnUsersSubnet       string   `json:"vpnUsersSubnet"`
+	Region               string   `json:"region"`
+	Enable               bool     `json:"enable"`
+	AllowSSHToEveryone   bool     `json:"allowSSHToEveryone"`
+	RouteAllTrafficViaGW bool     `json:"routeAllTrafficViaGW"`
+	PrivateIP            string   `json:"privateIP"`
+	State                string   `json:"state"`
+	Name                 string   `json:"name"`
+	Description          string   `json:"description"`
+	SecurityGroup        string   `json:"securityGroup"`
+	OpenVPNProtocol      string   `json:"openVPNProtocol"`
+	ClientRoutes         []string `json:"clientRoutes"`
+	GatewayAsDNS         bool     `json:"gatewayAsDNS"`
+	DirectRoutesOnly     bool     `json:"directRoutesOnly"`
+	HaState              string   `json:"haState"`
+	Id                   string   `json:"id,omitempty"`
+	Release              string   `json:"release,omitempty"`
+	IdentityServerName   string   `json:"identityServerName,omitempty"`
 }
 
 type GatewaysEndpoint struct {

@@ -26,7 +26,7 @@ func (s *Subnet) GatewayID() string {
 	}
 	prevToken := tokens[len(tokens)-2]
 	if prevToken == "gateways" || prevToken == "servers" {
-		return tokens[len(tokens) - 1]
+		return tokens[len(tokens)-1]
 	}
 	return ""
 }
@@ -144,13 +144,25 @@ func (endpoint *SubnetsEndpoint) Delete(id string) error {
 
 func (endpoint *SubnetsEndpoint) AssignGateway(subnetId string, gatewayId string) (*Subnet, error) {
 	if gatewayId == "" {
-		return nil, nil
+		return endpoint.ClearGateway(subnetId)
 	}
 	type result struct {
 		Subnet Subnet `json:"subnet"`
 	}
 	var res result
 	_, err := endpoint.service.Put(fmt.Sprintf("%s/%s/gateways/%s", endpoint.url, subnetId, gatewayId), "", "", &res)
+	if err != nil {
+		return nil, err
+	}
+	return &res.Subnet, nil
+}
+
+func (endpoint *SubnetsEndpoint) ClearGateway(subnetId string) (*Subnet, error) {
+	type result struct {
+		Subnet Subnet `json:"subnet"`
+	}
+	var res result
+	_, err := endpoint.service.Put(fmt.Sprintf("%s/%s/gateways", endpoint.url, subnetId), "", "", &res)
 	if err != nil {
 		return nil, err
 	}
